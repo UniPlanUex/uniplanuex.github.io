@@ -1,5 +1,5 @@
 // Guarda la web en el móvil para que abra rápido y funcione sin conexión.
-const CACHE = "uniplan-bd91a1bb2e";
+const CACHE = "uniplan-ce4ef1d014";
 const FILES = ["./", "index.html", "manifest.webmanifest", "img/banner_badajoz.jpg", "img/banner_caceres.jpg", "img/logo.png",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "icons/favicon-48.png"];
 

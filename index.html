@@ -415,6 +415,12 @@ function pastPlans() {
     ["c4", "Tarde de tapas"], ["c3", "Estreno en el cine"],
     [null, "Grupo de estudio de Contabilidad", "📚", "Facultad de Económicas, Badajoz"],
     ["c2", "Burger del viernes"],
+    [null, "Tarde de juegos de mesa", "🎲", "Parque de Castelar, Badajoz"],
+    [null, "Running por el Guadiana", "🏃", "Paseo fluvial del Guadiana"],
+    [null, "Intercambio de idiomas", "🗣️", "Plaza Alta, Badajoz"],
+    [null, "Quedada para estudiar Cálculo", "📚", "Biblioteca Central del Campus de Badajoz"],
+    [null, "Picnic en el Parque de Castelar", "🧺", "Parque de Castelar, Badajoz"],
+    [null, "Partido de fútbol 7", "⚽", "Pistas deportivas del Campus de Badajoz"],
   ];
   return past.map(([cid, title, emoji, place], i) => {
     const id = "h" + (i + 1), when = date(i + 1), creator = friends[i % friends.length];
@@ -424,7 +430,7 @@ function pastPlans() {
 }
 function initialState() {
   return {
-    v: 2, nextId: 1000, city: "Badajoz", theme: "light",
+    v: 3, nextId: 1000, city: "Badajoz", theme: "light",
     notify: { plans: true, coupons: true, rewards: true },
     user: { name: "María González", email: "maria.gonzalez@alumnos.unex.es", code: "UNIPLAN23" },
     favorites: [], redeemedCoupons: ["c13", "c14", "c15", "c16", "c17"], claimed: {}, unread: 1,
@@ -436,6 +442,12 @@ function initialState() {
       freePlan("p8", "Partido de fútbol 7", "⚽", "Badajoz", "Pistas deportivas del Campus de Badajoz", "Miércoles, 18:00", "Hugo F.", ["Hugo F.", "Daniel M.", "Álex T.", "Pablo G."], 14),
       freePlan("p9", "Estudiar juntos para Estadística", "📚", "Badajoz", "Biblioteca Central del Campus de Badajoz", "Mañana, 10:00", "Nerea C.", ["Nerea C.", "Paula S."], 6),
       freePlan("p10", "Paseo por la Alcazaba al atardecer", "🚶", "Badajoz", "Alcazaba de Badajoz", "Sábado, 19:00", "Giulia R.", ["Giulia R.", "Luca B."], 10, { erasmus: true }),
+      freePlan("p11", "Tarde de juegos de mesa", "🎲", "Badajoz", "Parque de Castelar, Badajoz", "Jueves, 17:30", "Irene V.", ["Irene V.", "Pablo G.", "Marta L."], 8),
+      freePlan("p12", "Quedada para estudiar Cálculo", "📚", "Badajoz", "Sala de grupos de la Biblioteca Central del Campus", "Hoy, 16:00", "Daniel M.", ["Daniel M."], 5),
+      freePlan("p13", "Running por el Guadiana", "🏃", "Badajoz", "Paseo fluvial del Guadiana, junto al Puente Real", "Mañana, 08:30", "Álex T.", ["Álex T.", "Sofía D."], 10),
+      freePlan("p14", "Intercambio de idiomas español-inglés", "🗣️", "Badajoz", "Plaza Alta, Badajoz", "Miércoles, 19:00", "Emma K.", ["Emma K.", "Luca B.", "Nerea C."], 12, { erasmus: true }),
+      freePlan("p15", "Tarde de juegos de mesa", "🎲", "Cáceres", "Parque del Príncipe, Cáceres", "Viernes, 18:00", "Hugo F.", ["Hugo F.", "Irene V."], 8),
+      freePlan("p16", "Estudiar Anatomía en grupo", "📚", "Cáceres", "Biblioteca del Campus de Cáceres", "Mañana, 10:00", "Paula S.", ["Paula S.", "Marta L.", "Ana P."], 6),
       couponPlan("p5", "c6", "Ruta de tapas por el centro", "Sábado, 13:00", "Sofía D.", ["Sofía D.", "Luca B."], 6, { erasmus: true }),
       couponPlan("p6", "c8", "Bolos Erasmus", "Domingo, 18:00", "Emma K.", ["Emma K.", "Hugo F.", "Irene V."], 8, { erasmus: true }),
       ...pastPlans(),
@@ -452,6 +464,12 @@ function initialState() {
       [9, "p8", "Hugo F.", "Faltan 3 para hacer dos equipos completos, ¡animaos!"],
       [10, "p9", "Nerea C.", "Llevo los ejercicios del tema 4 resueltos 📈"],
       [11, "p10", "Giulia R.", "Ciao! Someone can show us the best views? 🌅"],
+      [12, "p11", "Irene V.", "Llevo el Catán y el Dobble. ¡Si alguien tiene Virus que lo traiga! 🎲"],
+      [13, "p12", "Daniel M.", "Voy a repasar límites y derivadas, quien quiera se une 📐"],
+      [14, "p13", "Álex T.", "Ritmo tranquilo, unos 5 km. ¡Nadie se queda atrás! 🏃"],
+      [15, "p14", "Emma K.", "Hi! You practise English, we practise Spanish 😄"],
+      [16, "p15", "Hugo F.", "¿Os parece si llevamos algo de merienda? 🍪"],
+      [17, "p16", "Paula S.", "Toca el tema de huesos del miembro superior 🦴"],
     ].map(([id, plan, author, text, sys]) => ({ id, plan, author, text, sys: !!sys })),
     notifications: [
       { id: 1, emoji: "🎁", text: "Tu plan \"Cena universitaria\" se ha completado. ¡Has ahorrado 4,00 €!", time: "Ayer" },
@@ -462,10 +480,10 @@ function initialState() {
 }
 
 // ---------------------------------------------------------------- Estado (guardado en este navegador)
-const KEY = "uniplan-demo-v2";
+const KEY = "uniplan-demo-v3";
 let S;
 try { S = JSON.parse(localStorage.getItem(KEY)); } catch (e) { S = null; }
-if (!S || S.v !== 2) S = initialState();
+if (!S || S.v !== 3) S = initialState();
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* sin almacenamiento: la demo sigue en memoria */ } }
 
 // ---------------------------------------------------------------- Utilidades
@@ -708,6 +726,16 @@ function catChips(sel, key) {
 // ---------------------------------------------------------------- Pantallas
 const screens = {};
 
+// Quedadas sin cupón organizadas por otros estudiantes, para el inicio.
+function meetupsSection() {
+  const list = S.plans.filter(p => !p.completed && !p.couponId && p.city === S.city && !p.members.includes(ME));
+  if (!list.length) return "";
+  return `<section class="stack" style="gap:6px">
+    <h3 class="section-head">Quedadas de estudiantes</h3>
+    <p class="small muted">Planes abiertos organizados por otros estudiantes. No necesitan cupón.</p>
+    <div class="hscroll">${list.map(planCard).join("")}</div>
+  </section>`;
+}
 screens.home = () => {
   const list = DATA.coupons
     .filter(c => BIZ[c.biz].city === S.city)
@@ -728,6 +756,7 @@ screens.home = () => {
       <img src="${S.city === "Cáceres" ? BANNERS.caceres : BANNERS.badajoz}" alt="${S.city === "Cáceres" ? "Plaza Mayor de Cáceres" : "Puerta de Palmas, Badajoz"}" width="1200" height="600">
       <h2>¡Descubre tus mejores UniPlanes y ahorra con amigos en la <em>UEx!</em></h2>
     </section>
+    ${meetupsSection()}
     <h1>Mis Cupones y Planes</h1>
     ${catChips(ui.cat, "cat")}
     <div class="chips" role="group" aria-label="Tipo de cupón">
