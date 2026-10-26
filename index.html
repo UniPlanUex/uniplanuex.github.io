@@ -726,22 +726,29 @@ function catChips(sel, key) {
 // ---------------------------------------------------------------- Pantallas
 const screens = {};
 
-// Quedadas sin cupón organizadas por otros estudiantes, para el inicio.
-function meetupsSection() {
-  const list = S.plans.filter(p => !p.completed && !p.couponId && p.city === S.city && !p.members.includes(ME));
-  if (!list.length) return "";
-  return `<section class="stack" style="gap:6px">
-    <h3 class="section-head">Quedadas de estudiantes</h3>
-    <p class="small muted">Planes abiertos organizados por otros estudiantes. No necesitan cupón.</p>
-    <div class="hscroll">${list.map(planCard).join("")}</div>
-  </section>`;
+// Quedada sin cupón de otro estudiante, con el mismo formato que la tarjeta de cupón.
+function meetupCard(p) {
+  const full = p.members.length >= p.max;
+  return `<div class="coupon">
+    <button class="tile" style="border:0" data-go="chat" data-id="${p.id}" aria-label="Abrir ${esc(p.title)}">${p.emoji}</button>
+    <span class="body">
+      <button style="all:unset;cursor:pointer;display:flex;flex-direction:column;gap:6px" data-go="chat" data-id="${p.id}">
+        <span class="title">${esc(p.title)}</span>
+        <span class="small muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.when)} · ${esc(p.place)}</span>
+      </button>
+      <span class="row"><span class="grow kind muted">🙌 Quedada · ${p.members.length}/${p.max}</span><button class="btn" data-act="join-open" data-id="${p.id}" ${full ? "disabled" : ""}>${full ? "Completo" : "Unirme"}</button></span>
+    </span>
+  </div>`;
 }
 screens.home = () => {
   const list = DATA.coupons
     .filter(c => BIZ[c.biz].city === S.city)
     .filter(c => !ui.cat || BIZ[c.biz].cat === ui.cat)
-    .filter(c => ui.group === null || (c.min > 1) === ui.group)
+    .filter(c => ui.group === null || (ui.group === "group" && c.min > 1) || (ui.group === "solo" && c.min === 1))
     .sort((a, b) => b.featured - a.featured);
+  // Las quedadas sin cupón no tienen categoría de comercio: solo salen sin filtro de categoría.
+  const meetups = !ui.cat && (ui.group === null || ui.group === "meetup")
+    ? S.plans.filter(p => !p.completed && !p.couponId && p.city === S.city && !p.members.includes(ME)) : [];
   return `
   <header class="home-head">
     <div style="position:relative;justify-self:start">
@@ -756,13 +763,13 @@ screens.home = () => {
       <img src="${S.city === "Cáceres" ? BANNERS.caceres : BANNERS.badajoz}" alt="${S.city === "Cáceres" ? "Plaza Mayor de Cáceres" : "Puerta de Palmas, Badajoz"}" width="1200" height="600">
       <h2>¡Descubre tus mejores UniPlanes y ahorra con amigos en la <em>UEx!</em></h2>
     </section>
-    ${meetupsSection()}
     <h1>Mis Cupones y Planes</h1>
     ${catChips(ui.cat, "cat")}
-    <div class="chips" role="group" aria-label="Tipo de cupón">
-      ${[[null, "Todos"], [false, "👤 Individuales"], [true, "👥 En grupo"]].map(([v, l]) => `<button class="chip y" aria-pressed="${ui.group === v}" data-act="group" data-v="${v}">${l}</button>`).join("")}
+    <div class="chips" role="group" aria-label="Tipo">
+      ${[[null, "Todos"], ["solo", "👤 Individuales"], ["group", "👥 En grupo"], ["meetup", "🙌 Quedadas"]].map(([v, l]) => `<button class="chip y" aria-pressed="${ui.group === v}" data-act="group" data-v="${v ?? ""}">${l}</button>`).join("")}
     </div>
-    ${list.length ? list.map(couponCard).join("") : `<div class="empty"><span class="e">🔍</span>Todavía no hay cupones así en ${esc(S.city)}.</div>`}
+    ${list.map(couponCard).join("")}${meetups.map(meetupCard).join("")}
+    ${list.length || meetups.length ? "" : `<div class="empty"><span class="e">🔍</span>Todavía no hay nada así en ${esc(S.city)}.</div>`}
   </div>`;
 };
 
@@ -1266,7 +1273,7 @@ document.addEventListener("click", e => {
     case "city": S.city = v; ui.menu = null; save(); render(); break;
     case "cat": ui.cat = v || null; render(); break;
     case "ecat": ui.ecat = v || null; $("#results").innerHTML = exploreResults(); document.querySelectorAll('[data-act="ecat"]').forEach(b => b.setAttribute("aria-pressed", String((b.dataset.v || null) === ui.ecat))); break;
-    case "group": ui.group = v === "null" ? null : v === "true"; render(); break;
+    case "group": ui.group = v || null; render(); break;
     case "fav": { const i = S.favorites.indexOf(d.id); i >= 0 ? S.favorites.splice(i, 1) : S.favorites.push(d.id); save(); render(); break; }
     case "join-open": joinPlan(d.id); go("chat", { id: d.id }); break;
     case "join": joinPlan(d.id); render(); break;
