@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="UniPlan: cupones de comercios de Badajoz y Cáceres que se desbloquean al quedar en grupo. El cupón es la excusa, el grupo es el plan.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/favicon-48.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; font: 14px/1.4 system-ui, -apple-system, sans-serif; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+</style>
+<title>UniPlan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="UniPlan">
+<meta name="theme-color" content="#F7F7F5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&display=swap">
+</head>
+<body>
+<style>
+/* Layout: columna de app móvil (máx. 480px) con cabeceras pegajosas y barra inferior fija, igual que la app Android. */
+:root {
+  --green: #1F8A5B;
+  --green-dark: #166B46;
+  --green-soft: #E3F4EC;
+  --teal: #14B48A;
+  --yellow: #F5A623;
+  --yellow-soft: #FFF1D9;
+  --amber-text: #8F5B00;
+  --bg: #F7F7F5;
+  --surface: #FFFFFF;
+  --surface-2: #F0F1EE;
+  --fg: #1B1D1B;
+  --muted: #5C625E;
+  --line: #E2E5E1;
+  --mine: #B0277A;
+  --on-accent: #FFFFFF;
+  --shadow: 0 1px 2px rgba(20, 40, 30, .08), 0 2px 8px rgba(20, 40, 30, .06);
+  --font-display: "Nunito", ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+  --font-body: "Nunito Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --nav-h: 64px;
+}
+:root.dark {
+  --green: #3DB07C;
+  --green-dark: #2A8C60;
+  --green-soft: #1D3A2C;
+  --teal: #2CC79C;
+  --yellow: #F5A623;
+  --yellow-soft: #4A3A1A;
+  --amber-text: #FFCB73;
+  --bg: #121412;
+  --surface: #1E211F;
+  --surface-2: #2A2E2B;
+  --fg: #E6E8E5;
+  --muted: #B3B9B4;
+  --line: #343935;
+  --mine: #C2408F;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .4);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-tap-highlight-color: transparent;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg);
+}
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--green); }
+:focus-visible { outline: 2.5px solid var(--teal); outline-offset: 2px; }
+#app {
+  max-width: 480px; margin: 0 auto; min-height: 100%;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 calc(var(--nav-h) + 24px + env(safe-area-inset-bottom, 0px));
+}
+#app.no-nav { padding-block-end: calc(96px + env(safe-area-inset-bottom, 0px)); }
+#app.chat-mode { padding-block-end: 0; }
+.stack { display: flex; flex-direction: column; gap: 12px; }
+.row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.grow { flex: 1; min-width: 0; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.tiny { font-size: 12px; }
+.bold { font-weight: 700; }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; letter-spacing: -.01em; }
+h1 { font-size: 28px; font-weight: 900; }
+h2 { font-size: 22px; font-weight: 900; }
+h3 { font-size: 17px; font-weight: 800; }
+p { margin: 0; }
+
+/* Logo */
+.logo { font-family: var(--font-display); font-weight: 900; font-size: 24px; letter-spacing: -.02em; }
+.logo .u { color: var(--teal); } .logo .p { color: var(--yellow); }
+
+/* Cabecera de inicio */
+.home-head { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding-block: 10px 6px; }
+.city { justify-self: start; display: inline-flex; align-items: center; gap: 4px; background: none; border: 0; padding: 8px 4px; font-weight: 700; }
+.city svg { color: var(--green); }
+.bell { justify-self: end; position: relative; background: none; border: 0; padding: 8px; }
+.badge { position: absolute; top: 2px; right: 0; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: #C62828; color: #fff; font-size: 11px; font-weight: 800; display: grid; place-items: center; }
+.menu { position: absolute; z-index: 20; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 4px; min-width: 160px; }
+.menu button { display: block; width: 100%; text-align: left; background: none; border: 0; padding: 10px 12px; border-radius: 8px; }
+.menu button:hover { background: var(--surface-2); }
+
+.hero { border-radius: 20px; overflow: hidden; background: #166B46; color: #fff; display: flex; flex-direction: column; }
+.hero img { display: block; width: 100%; max-width: 100%; height: auto; aspect-ratio: 2 / 1; object-fit: cover; }
+.hero h2 { color: #fff; font-size: 23px; line-height: 1.15; padding: 2px 16px 16px; }
+.hero h2 em { color: #F5A623; font-style: normal; }
+
+/* Chips */
+.chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin-inline: -4px; padding: 2px 4px; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 10px;
+  padding: 7px 12px; font-weight: 600; font-size: 14px; white-space: nowrap;
+}
+.chip[aria-pressed="true"] { background: var(--green); border-color: var(--green); color: var(--on-accent); }
+.chip.y[aria-pressed="true"] { background: var(--yellow); border-color: var(--yellow); color: #fff; }
+
+/* Tarjeta de cupón */
+.coupon {
+  display: flex; background: var(--surface); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow);
+  border: 1.5px solid transparent; text-align: left; padding: 0; width: 100%;
+}
+.coupon.featured { border-color: var(--yellow); }
+.tile { background: var(--green); display: grid; place-items: center; font-size: 42px; flex: none; }
+.coupon .tile { width: 104px; }
+.coupon .body { flex: 1; min-width: 0; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+.coupon .title { font-family: var(--font-display); font-weight: 800; font-size: 17px; line-height: 1.2; }
+.kind { font-size: 13px; font-weight: 700; }
+.kind.group { color: var(--green); } .kind.solo { color: var(--amber-text); }
+.btn {
+  border: 0; border-radius: 999px; background: var(--green); color: var(--on-accent);
+  font-weight: 700; padding: 8px 16px; min-height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none;
+}
+.btn.y { background: var(--yellow); color: #fff; }
+.btn.ghost { background: transparent; color: var(--green); border: 1.5px solid var(--green); }
+.btn.text { background: transparent; color: var(--green); padding-inline: 8px; }
+.btn.block { width: 100%; min-height: 50px; font-size: 16px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* Secciones */
+.section-head { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+.hscroll { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; margin-inline: -16px; padding: 4px 16px 8px; scroll-snap-type: x proximity; }
+.hscroll::-webkit-scrollbar { display: none; }
+.mini { flex: none; width: 152px; background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); padding: 12px; text-align: left; border: 0; scroll-snap-align: start; display: flex; flex-direction: column; gap: 4px; }
+.mini .e { font-size: 28px; }
+.plancard { flex: none; width: 196px; background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; scroll-snap-align: start; display: flex; flex-direction: column; }
+.plancard .tile { height: 84px; font-size: 38px; }
+.plancard .body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px; background: var(--green-soft); color: var(--green); font-weight: 700; font-size: 12px; white-space: nowrap; }
+.pill.y { background: var(--yellow-soft); color: var(--amber-text); }
+.prog { font-weight: 800; font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1.5px solid var(--yellow); color: var(--amber-text); font-variant-numeric: tabular-nums; }
+.prog.ok { border-color: var(--green); color: var(--green); }
+
+.avatars { display: flex; align-items: center; }
+.av { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 12px; border: 2px solid var(--surface); margin-left: -8px; flex: none; }
+.avatars .av:first-child { margin-left: 0; }
+.avatars .more { margin-left: 4px; font-size: 12px; font-weight: 800; }
+
+.search { display: flex; align-items: center; gap: 8px; background: var(--surface-2); border-radius: 999px; padding: 0 14px; }
+.search input { border: 0; background: transparent; flex: 1; min-width: 0; padding: 12px 0; outline: none; }
+
+/* Barra superior de subpáginas */
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 15; display: flex; align-items: center; gap: 4px;
+  margin-inline: -16px; padding: 8px 8px; background: var(--bg);
+}
+.topbar.green { background: var(--green); color: #fff; }
+.topbar .t { flex: 1; min-width: 0; }
+.topbar .t b { display: block; font-family: var(--font-display); font-weight: 800; font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar .t span { display: block; font-size: 12px; opacity: .85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.icon-btn { background: none; border: 0; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; color: inherit; flex: none; position: relative; }
+.icon-btn:hover { background: color-mix(in srgb, currentColor 10%, transparent); }
+
+/* Detalle */
+.detail-hero { margin-inline: -16px; height: 190px; background: var(--green); display: grid; place-items: center; font-size: 92px; position: relative; }
+.detail-hero .icon-btn { position: absolute; top: 10px; background: rgba(255,255,255,.92); color: #1B1D1B; }
+.detail-hero .l { left: 12px; } .detail-hero .r { right: 12px; }
+.discount { background: var(--yellow); color: #fff; font-family: var(--font-display); font-weight: 900; padding: 6px 12px; border-radius: 10px; flex: none; }
+.actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; border-block: 1px solid var(--line); padding-block: 6px; }
+.actions > * { background: none; border: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border-radius: 10px; color: var(--fg); text-decoration: none; font-size: 13px; font-weight: 600; }
+.actions svg { color: var(--green); }
+ul.conds { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.card { background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); padding: 12px 14px; }
+.bottom-cta {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  padding: 12px max(16px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  background: linear-gradient(to top, var(--bg) 75%, transparent);
+}
+.bottom-cta > * { max-width: 448px; margin: 0 auto; display: flex; }
+
+/* Formularios */
+label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 700; }
+.input {
+  width: 100%; border: 1.5px solid var(--line); background: var(--surface); border-radius: 12px; padding: 12px 14px; font-weight: 400;
+}
+.input:focus { border-color: var(--green); outline: none; }
+.input.err { border-color: #C62828; }
+.hint { font-size: 12px; color: var(--muted); font-weight: 400; }
+.hint.err { color: #C62828; }
+.step { font-family: var(--font-display); font-weight: 800; font-size: 16px; }
+input[type="range"] { width: 100%; accent-color: var(--green); }
+.switch { appearance: none; width: 46px; height: 28px; border-radius: 14px; background: var(--line); position: relative; flex: none; transition: background .2s; border: 0; cursor: pointer; }
+.switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+.switch:checked { background: var(--green); }
+.switch:checked::after { transform: translateX(18px); }
+.radio { display: flex; align-items: center; gap: 12px; padding: 12px 4px; border-bottom: 1px solid var(--line); }
+.radio input { accent-color: var(--green); width: 20px; height: 20px; margin: 0; }
+
+/* Chat */
+.chat { display: flex; flex-direction: column; height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); margin-inline: -16px; }
+.chat .topbar { margin-inline: 0; position: static; }
+.chat-info { background: var(--surface); box-shadow: var(--shadow); padding: 10px 16px; display: flex; flex-direction: column; gap: 6px; }
+.bar { height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--yellow); border-radius: 4px; transition: width .4s; }
+.bar.ok > i { background: var(--green); }
+.msgs { flex: 1; overflow-y: auto; padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+.msg { display: flex; gap: 8px; align-items: flex-end; max-width: 85%; }
+.msg.mine { align-self: flex-end; flex-direction: row-reverse; }
+.bubble { padding: 8px 12px; border-radius: 16px; background: var(--surface-2); overflow-wrap: anywhere; }
+.msg.mine .bubble { background: var(--mine); color: #fff; }
+.msg .who { font-size: 12px; font-weight: 800; margin-bottom: 2px; }
+.sys { align-self: center; background: var(--surface-2); padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; text-align: center; }
+.composer { display: flex; gap: 8px; padding: 10px 16px; background: var(--bg); border-top: 1px solid var(--line); }
+.composer .input { border-radius: 999px; }
+.chat-cta { padding: 8px 16px 0; background: var(--bg); }
+
+/* Canje */
+.qr-card { background: var(--surface); border-radius: 18px; box-shadow: var(--shadow); padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+#qr { background: #fff; padding: 12px; border-radius: 12px; }
+#qr img, #qr canvas { display: block; width: 200px; height: 200px; image-rendering: pixelated; }
+
+/* Mis planes */
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--line); }
+.tabs button { background: none; border: 0; padding: 12px 4px; font-weight: 700; color: var(--muted); border-bottom: 3px solid transparent; }
+.tabs button[aria-selected="true"] { color: var(--green); border-bottom-color: var(--green); }
+.prow { display: flex; gap: 12px; align-items: center; background: var(--surface); border-radius: 14px; box-shadow: var(--shadow); padding: 10px; text-align: left; border: 0; width: 100%; }
+.prow .tile { width: 64px; height: 64px; border-radius: 12px; font-size: 30px; }
+.check { color: var(--green); font-weight: 900; font-size: 20px; text-align: center; }
+
+/* Perfil */
+.profile-head { margin-inline: -16px; background: var(--green); color: #fff; border-radius: 0 0 32px 32px; padding: 28px 16px 24px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+.profile-head .av { width: 84px; height: 84px; font-size: 34px; margin: 0; border-width: 3px; border-color: #fff; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; padding-block: 18px; }
+.stats b { display: block; font-family: var(--font-display); font-size: 22px; font-weight: 900; color: var(--green); font-variant-numeric: tabular-nums; }
+.rewards-card { background: var(--yellow-soft); border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; border: 0; text-align: left; width: 100%; }
+.rewards-card .bar { height: 10px; background: var(--surface); }
+.menu-list { display: flex; flex-direction: column; margin-inline: -16px; margin-top: 12px; border-top: 1px solid var(--line); }
+.menu-item { display: flex; align-items: center; gap: 14px; padding: 15px 20px; background: none; border: 0; border-bottom: 1px solid var(--line); text-align: left; width: 100%; }
+.menu-item svg { color: var(--green); flex: none; }
+.menu-item .tag { color: var(--yellow); font-weight: 800; font-size: 12px; }
+
+.tier { display: flex; flex-direction: column; gap: 10px; }
+.big-count { background: var(--green); color: #fff; border-radius: 20px; padding: 18px; text-align: center; }
+.big-count b { display: block; font-family: var(--font-display); font-size: 56px; font-weight: 900; line-height: 1; }
+
+.notif { display: flex; gap: 12px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.notif .e { width: 44px; height: 44px; border-radius: 50%; background: var(--yellow-soft); display: grid; place-items: center; font-size: 20px; flex: none; }
+
+/* Barra inferior */
+.nav {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--surface); border-top: 1px solid var(--line);
+  padding: 0 max(8px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(8px, env(safe-area-inset-left, 0px));
+}
+.nav > div { max-width: 480px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); align-items: center; height: var(--nav-h); }
+.nav button { background: none; border: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 12px; font-weight: 700; color: var(--muted); padding: 6px 0; }
+.nav button[aria-current="page"] { color: var(--green); }
+.nav button[aria-current="page"] svg { background: var(--green-soft); border-radius: 12px; padding: 2px 14px; width: 52px; }
+.nav .plus { width: 52px; height: 52px; border-radius: 16px; background: var(--green); color: #fff; display: grid; place-items: center; margin: 0 auto; box-shadow: var(--shadow); }
+
+/* Avisos */
+#toast { position: fixed; z-index: 40; left: 50%; transform: translateX(-50%); top: calc(12px + env(safe-area-inset-top, 0px)); width: min(440px, calc(100% - 32px)); display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast { background: var(--fg); color: var(--bg); padding: 12px 14px; border-radius: 14px; box-shadow: 0 6px 20px rgba(0,0,0,.2); font-weight: 600; animation: in .25s ease-out; }
+@keyframes in { from { transform: translateY(-8px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+.empty { text-align: center; padding: 40px 12px; color: var(--muted); display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.empty .e { font-size: 44px; }
+.demo-note { background: var(--surface-2); border-radius: 12px; padding: 10px 12px; font-size: 13px; color: var(--muted); }
+</style>
+
+<div id="app"></div>
+<div id="toast" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+"use strict";
+// ---------------------------------------------------------------- Datos
+const DATA = {"biz": [{"id": "b1", "name": "Bar Golfol", "cat": "BARES", "city": "Badajoz", "address": "Calle Menacho 12, Badajoz", "dist": 180}, {"id": "b2", "name": "Bar La Sureña", "cat": "BARES", "city": "Badajoz", "address": "Av. de Elvas s/n, Badajoz", "dist": 250}, {"id": "b3", "name": "Burger UEX", "cat": "RESTAURANTES", "city": "Badajoz", "address": "Campus de Badajoz, Av. de Elvas", "dist": 350}, {"id": "b4", "name": "Restaurante El Mirador", "cat": "RESTAURANTES", "city": "Badajoz", "address": "Plaza Alta 3, Badajoz", "dist": 400}, {"id": "b5", "name": "Cines Puerta Palmas", "cat": "OCIO", "city": "Badajoz", "address": "Calle Puerta de Palmas 1, Badajoz", "dist": 900}, {"id": "b9", "name": "Zapatería Paso a Paso", "cat": "MODA", "city": "Badajoz", "address": "Calle San Juan 21, Badajoz", "dist": 600}, {"id": "b10", "name": "Moda Alcazaba", "cat": "MODA", "city": "Badajoz", "address": "Calle Francisco Pizarro 8, Badajoz", "dist": 650}, {"id": "b11", "name": "Carnicería La Dehesa", "cat": "ALIMENTACION", "city": "Badajoz", "address": "Av. Santa Marina 14, Badajoz", "dist": 500}, {"id": "b12", "name": "Frutería El Huerto del Guadiana", "cat": "ALIMENTACION", "city": "Badajoz", "address": "Calle Ramón Albarrán 5, Badajoz", "dist": 550}, {"id": "b13", "name": "Horno San Andrés", "cat": "ALIMENTACION", "city": "Badajoz", "address": "Plaza de San Andrés 2, Badajoz", "dist": 700}, {"id": "b14", "name": "Papelería El Cuaderno", "cat": "PAPELERIA", "city": "Badajoz", "address": "Av. de Elvas 40, Badajoz", "dist": 300}, {"id": "b15", "name": "Librería Los Pilares", "cat": "PAPELERIA", "city": "Badajoz", "address": "Calle Obispo San Juan de Ribera 4, Badajoz", "dist": 800}, {"id": "b16", "name": "Copistería Campus Print", "cat": "SERVICIOS", "city": "Badajoz", "address": "Av. de Elvas 52, Badajoz", "dist": 200}, {"id": "b17", "name": "Peluquería Estilo Uni", "cat": "SERVICIOS", "city": "Badajoz", "address": "Calle Juan Carlos I 10, Badajoz", "dist": 750}, {"id": "b18", "name": "Óptica Vista Clara", "cat": "SERVICIOS", "city": "Badajoz", "address": "Paseo de San Francisco 6, Badajoz", "dist": 850}, {"id": "b19", "name": "Gimnasio Guadiana Fit", "cat": "DEPORTE", "city": "Badajoz", "address": "Av. de Europa 9, Badajoz", "dist": 1100}, {"id": "b20", "name": "Bicis Rueda Libre", "cat": "DEPORTE", "city": "Badajoz", "address": "Calle Stadium 3, Badajoz", "dist": 950}, {"id": "b6", "name": "Taberna Plaza Mayor", "cat": "BARES", "city": "Cáceres", "address": "Plaza Mayor 8, Cáceres", "dist": 300}, {"id": "b7", "name": "Pizzería Los Adarves", "cat": "RESTAURANTES", "city": "Cáceres", "address": "Calle Pintores 20, Cáceres", "dist": 450}, {"id": "b8", "name": "Bolera Cáceres", "cat": "OCIO", "city": "Cáceres", "address": "Av. de la Universidad 5, Cáceres", "dist": 700}, {"id": "b21", "name": "Papelería Campus Cáceres", "cat": "PAPELERIA", "city": "Cáceres", "address": "Av. de la Universidad 12, Cáceres", "dist": 250}, {"id": "b22", "name": "Calzados Cánovas", "cat": "MODA", "city": "Cáceres", "address": "Paseo de Cánovas 15, Cáceres", "dist": 900}], "coupons": [{"id": "c1", "biz": "b1", "title": "Jarra GRATIS con cada ración", "label": "GRATIS", "desc": "Por cada ración que pidáis para compartir, una jarra gratis, cuando vais al menos 3 personas con un UniPlan. Ideal para conocer a la gente de clase fuera del grupo de WhatsApp.", "emoji": "🍺", "min": 3, "until": "31/05/2027", "conds": ["Una jarra gratis por cada ración pedida", "No acumulable a otras ofertas", "Solo mayores de 18 años", "Consumo responsable"], "save": 2.5, "adult": true, "featured": true}, {"id": "c2", "biz": "b3", "title": "2x1 Burger", "label": "2x1", "desc": "Pide dos hamburguesas y paga solo una. Perfecto para una comida rápida entre clases con tu compañero de prácticas.", "emoji": "🍔", "min": 2, "until": "30/06/2027", "conds": ["Válido de lunes a jueves", "Se paga la hamburguesa de mayor precio"], "save": 8.0, "adult": false, "featured": true}, {"id": "c3", "biz": "b5", "title": "20% Cine Universitario", "label": "-20%", "desc": "20% de descuento en la entrada para grupos de 2 o más universitarios. Cualquier sesión de lunes a jueves.", "emoji": "🎬", "min": 2, "until": "31/05/2027", "conds": ["No válido en estrenos el primer fin de semana", "Presenta el QR en taquilla"], "save": 1.6, "adult": false, "featured": false}, {"id": "c4", "biz": "b2", "title": "-20% en todas las copas", "label": "-20%", "desc": "Disfruta de un 20% de descuento en todas las copas al asistir a un UniPlan de 3 personas o más.", "emoji": "🍹", "min": 3, "until": "31/05/2027", "conds": ["Válido todos los días hasta las 02:00", "Solo mayores de 18 años", "Consumo responsable"], "save": 3.0, "adult": true, "featured": false}, {"id": "c5", "biz": "b4", "title": "Menú universitario 9,90 €", "label": "9,90 €", "desc": "Primero, segundo, bebida y postre por 9,90 € para grupos de 4 o más. Para celebrar el fin de exámenes como se merece.", "emoji": "🍝", "min": 4, "until": "30/06/2027", "conds": ["De lunes a viernes al mediodía", "Reserva recomendada"], "save": 4.0, "adult": false, "featured": false}, {"id": "c9", "biz": "b11", "title": "Pack barbacoa para 4: -20%", "label": "-20%", "desc": "Pack de carne para barbacoa (chorizo, pinchitos, panceta y costilla) con un 20% de descuento si lo compráis entre 4 o más. Para la próxima quedada en el piso.", "emoji": "🍖", "min": 4, "until": "30/06/2027", "conds": ["Encargo con 24 h de antelación", "Recogida en tienda"], "save": 6.0, "adult": false, "featured": false}, {"id": "c10", "biz": "b19", "title": "2x1 en la cuota mensual", "label": "2x1", "desc": "Apúntate con un amigo y pagad una sola cuota el primer mes. Entrenar acompañado motiva más.", "emoji": "🏋️", "min": 2, "until": "31/12/2026", "conds": ["Primer mes de alta", "Ambos deben ser estudiantes UEx"], "save": 25.0, "adult": false, "featured": true}, {"id": "c11", "biz": "b16", "title": "Apuntes encuadernados en grupo -30%", "label": "-30%", "desc": "Juntad los apuntes de la asignatura entre 4 o más y os encuadernamos todos los ejemplares con un 30% de descuento.", "emoji": "📒", "min": 4, "until": "30/06/2027", "conds": ["Mismo documento para todo el grupo", "Listo en 24 h"], "save": 3.0, "adult": false, "featured": false}, {"id": "c6", "biz": "b6", "title": "Tapa gratis con cada ronda", "label": "GRATIS", "desc": "Una tapa de la casa gratis con cada ronda para grupos de 3 o más en pleno casco histórico.", "emoji": "🥘", "min": 3, "until": "31/05/2027", "conds": ["Tapa del día", "Una tapa por ronda completa"], "save": 2.0, "adult": false, "featured": true}, {"id": "c7", "biz": "b7", "title": "Pizza familiar -30%", "label": "-30%", "desc": "30% de descuento en pizzas familiares para grupos de 3 o más. Para compartir, como los apuntes.", "emoji": "🍕", "min": 3, "until": "30/06/2027", "conds": ["En local, no a domicilio"], "save": 5.0, "adult": false, "featured": false}, {"id": "c8", "biz": "b8", "title": "2x1 en partida de bolos", "label": "2x1", "desc": "Dos partidas por el precio de una para grupos de 2 o más. Incluye alquiler de calzado.", "emoji": "🎳", "min": 2, "until": "31/05/2027", "conds": ["De domingo a jueves"], "save": 4.0, "adult": false, "featured": false}, {"id": "c12", "biz": "b9", "title": "15% en calzado", "label": "-15%", "desc": "15% de descuento en toda la tienda presentando el cupón. Zapatillas, botas y zapato de vestir.", "emoji": "👟", "min": 1, "until": "31/03/2027", "conds": ["No acumulable a rebajas", "Un uso por estudiante"], "save": 9.0, "adult": false, "featured": true}, {"id": "c13", "biz": "b10", "title": "10% en tu compra", "label": "-10%", "desc": "10% de descuento en ropa y complementos de la nueva temporada.", "emoji": "👕", "min": 1, "until": "31/03/2027", "conds": ["Compra mínima de 20 €"], "save": 3.0, "adult": false, "featured": false}, {"id": "c14", "biz": "b11", "title": "-3 € en compras de más de 15 €", "label": "-3 €", "desc": "Para llenar los táperes de la semana: 3 € de descuento en compras superiores a 15 €.", "emoji": "🥩", "min": 1, "until": "31/12/2026", "conds": ["Un uso por semana"], "save": 3.0, "adult": false, "featured": false}, {"id": "c15", "biz": "b12", "title": "Bolsa de fruta semanal -15%", "label": "-15%", "desc": "Bolsa de fruta y verdura de temporada (3 kg) con un 15% de descuento. Producto de la Vega del Guadiana.", "emoji": "🍎", "min": 1, "until": "31/12/2026", "conds": ["Contenido según temporada"], "save": 1.5, "adult": false, "featured": false}, {"id": "c16", "biz": "b13", "title": "Café + tostada por 1,50 €", "label": "1,50 €", "desc": "Desayuno universitario: café y media tostada con tomate y aceite por 1,50 €.", "emoji": "☕", "min": 1, "until": "30/06/2027", "conds": ["De lunes a viernes hasta las 11:00"], "save": 1.2, "adult": false, "featured": false}, {"id": "c17", "biz": "b14", "title": "10% en material escolar", "label": "-10%", "desc": "10% de descuento en cuadernos, bolígrafos, calculadoras y material de dibujo técnico.", "emoji": "✏️", "min": 1, "until": "30/06/2027", "conds": ["No aplicable a libros de texto"], "save": 2.0, "adult": false, "featured": false}, {"id": "c18", "biz": "b15", "title": "10% en libros de lectura", "label": "-10%", "desc": "10% de descuento en novela, ensayo y cómic. Y un marcapáginas de regalo.", "emoji": "📚", "min": 1, "until": "30/06/2027", "conds": ["No aplicable a libros de texto (ley del precio fijo)"], "save": 2.0, "adult": false, "featured": false}, {"id": "c19", "biz": "b16", "title": "Impresión y encuadernación del TFG -20%", "label": "-20%", "desc": "Imprime y encuaderna tu TFG o TFM con un 20% de descuento. Tapa dura disponible.", "emoji": "🎓", "min": 1, "until": "30/07/2027", "conds": ["Entrega en 48 h"], "save": 6.0, "adult": false, "featured": false}, {"id": "c20", "biz": "b17", "title": "Corte de pelo -25%", "label": "-25%", "desc": "25% de descuento en corte y peinado los martes y miércoles.", "emoji": "✂️", "min": 1, "until": "31/03/2027", "conds": ["Solo martes y miércoles", "Cita previa"], "save": 4.0, "adult": false, "featured": false}, {"id": "c21", "biz": "b18", "title": "20% en gafas + revisión de vista incluida", "label": "-20%", "desc": "Al comprar tus gafas graduadas o de sol, 20% de descuento y la revisión visual completa incluida.", "emoji": "👓", "min": 1, "until": "31/12/2026", "conds": ["Revisión incluida con la compra de gafas", "Cita previa"], "save": 20.0, "adult": false, "featured": false}, {"id": "c22", "biz": "b20", "title": "Puesta a punto GRATIS con tu compra", "label": "GRATIS", "desc": "Compra cualquier recambio o accesorio de más de 15 € (cubiertas, luces, candado…) y te hacemos la puesta a punto de la bici gratis: frenos, cambios y ruedas.", "emoji": "🚲", "min": 1, "until": "31/12/2026", "conds": ["Con compras de más de 15 € en recambios o accesorios", "Mano de obra de la puesta a punto incluida"], "save": 10.0, "adult": false, "featured": false}, {"id": "c23", "biz": "b21", "title": "Fotocopias a 0,03 €", "label": "0,03 €", "desc": "Fotocopias e impresiones en blanco y negro a 0,03 € la página.", "emoji": "🖨️", "min": 1, "until": "30/06/2027", "conds": ["A4, una cara"], "save": 1.0, "adult": false, "featured": false}, {"id": "c24", "biz": "b22", "title": "12% en zapatillas", "label": "-12%", "desc": "12% de descuento en zapatillas deportivas y casual.", "emoji": "👟", "min": 1, "until": "31/03/2027", "conds": ["No acumulable a otras ofertas"], "save": 7.0, "adult": false, "featured": false}]};
+const BANNERS = { badajoz: "img/banner_badajoz.jpg", caceres: "img/banner_caceres.jpg" };
+const ME = "Tú";
+const CITIES = ["Badajoz", "Cáceres"];
+const CATS = {
+  BARES: ["Bares", "🍻"], RESTAURANTES: ["Restaurantes", "🍽️"], OCIO: ["Ocio y cine", "🎬"], MODA: ["Moda y calzado", "👟"],
+  ALIMENTACION: ["Alimentación", "🥩"], PAPELERIA: ["Papelería y libros", "📚"], SERVICIOS: ["Servicios", "✂️"], DEPORTE: ["Deporte", "🏋️"],
+};
+const PLAN_TYPES = [
+  ["Tomar algo", "🍻"], ["Comer o cenar", "🍽️"], ["Cine", "🎬"], ["Deporte", "⚽"],
+  ["Estudiar", "📚"], ["Fiesta", "🎉"], ["Paseo o turismo", "🚶"], ["Otro", "✨"],
+];
+const WHEN = ["Hoy", "Mañana", "Viernes", "Sábado", "Domingo"];
+const TIERS = [
+  { id: "r20", need: 20, title: "Tarjeta regalo de Amazon de 5 €", emoji: "🎁" },
+  { id: "r50", need: 50, title: "Tarjeta regalo de Amazon de 20 €", emoji: "🏆" },
+];
+const FAKE = ["María G.", "Álex T.", "Nerea C.", "Giulia R.", "Daniel M.", "Paula S."];
+const REPLIES = ["¡Genial! 🙌", "Perfecto, allí nos vemos", "Yo llego 5 min tarde, guardadme sitio 😅", "¿Alguien más se apunta?", "👍", "¡Qué ganas!"];
+const BIZ = Object.fromEntries(DATA.biz.map(b => [b.id, b]));
+const CPN = Object.fromEntries(DATA.coupons.map(c => [c.id, c]));
+
+function couponPlan(id, cid, title, when, creator, members, max, extra = {}) {
+  const c = CPN[cid], b = BIZ[c.biz];
+  return { id, title, emoji: c.emoji, city: b.city, place: `${b.name} · ${b.address}`, maps: null, when, creator, members, max, couponId: cid, erasmus: false, redeemed: false, completed: false, ...extra };
+}
+function freePlan(id, title, emoji, city, place, when, creator, members, max, extra = {}) {
+  return { id, title, emoji, city, place, maps: null, when, creator, members, max, couponId: null, erasmus: false, redeemed: false, completed: false, ...extra };
+}
+function history() {
+  const today = new Date();
+  const first = new Date(today.getFullYear(), today.getMonth(), 1);
+  const fmt = d => String(d.getDate()).padStart(2, "0") + "/" + String(d.getMonth() + 1).padStart(2, "0");
+  const date = ago => { const d = new Date(today); d.setDate(d.getDate() - ago); return fmt(d < first ? first : d); };
+  const friends = ["Lucía R.", "Carlos M.", "Ana P.", "Javier S.", "Elena P.", "Nerea C.", "Hugo F.", "Paula S."];
+  const crew = (i, n) => [...Array(n - 1)].map((_, k) => friends[(i + k) % friends.length]).concat(ME);
+  const past = [
+    ["c5", "Cena universitaria"], ["c2", "Burger después del parcial"],
+    [null, "Estudiar para Estadística", "📚", "Biblioteca Central del Campus de Badajoz"],
+    ["c1", "Jarras con los de clase"], ["c4", "Copas de fin de semana"],
+    [null, "Partido de pádel", "⚽", "Pistas de pádel del Campus de Badajoz"],
+    ["c3", "Cine de los martes"], ["c9", "Barbacoa en el piso"], ["c2", "2x1 de burger con Javier"],
+    [null, "Paseo por el Guadiana", "🚶", "Parque del Guadiana"],
+    ["c11", "Apuntes de Derecho encuadernados"], ["c1", "Afterwork en el Golfol"],
+    [null, "Visita a la Alcazaba con los Erasmus", "🚶", "Alcazaba de Badajoz"],
+    ["c4", "Tarde de tapas"], ["c3", "Estreno en el cine"],
+    [null, "Grupo de estudio de Contabilidad", "📚", "Facultad de Económicas, Badajoz"],
+    ["c2", "Burger del viernes"],
+  ];
+  return past.map(([cid, title, emoji, place], i) => {
+    const id = "h" + (i + 1), when = date(i + 1), creator = friends[i % friends.length];
+    if (cid) { const n = Math.max(CPN[cid].min, 3); return couponPlan(id, cid, title, when, creator, crew(i, n), n + 2, { redeemed: true, completed: true }); }
+    return freePlan(id, title, emoji, "Badajoz", place, when, creator, crew(i, 3 + i % 3), 8, { completed: true });
+  });
+}
+function initialState() {
+  return {
+    v: 1, nextId: 1000, city: "Badajoz", theme: "light",
+    notify: { plans: true, coupons: true, rewards: true },
+    user: { name: "María González", email: "maria.gonzalez@alumnos.unex.es", code: "UNIPLAN23" },
+    favorites: [], redeemedCoupons: ["c14", "c15", "c16"], claimed: {}, unread: 1,
+    plans: [
+      couponPlan("p1", "c4", "Tarde de tapas", "Hoy, 19:30", "Lucía R.", ["Lucía R.", "Carlos M.", "Javier S."], 6),
+      couponPlan("p2", "c3", "Noche de cine", "Mañana, 21:00", "Ana P.", ["Ana P.", "Marta L."], 5, { erasmus: true }),
+      couponPlan("p3", "c1", "Jarra con los de Periodismo", "Viernes, 22:00", "Carlos M.", ["Carlos M.", "Elena P."], 8),
+      couponPlan("p4", "c2", "Burger después de prácticas", "Jueves, 14:00", "Pablo G.", ["Pablo G."], 4),
+      freePlan("p8", "Partido de fútbol 7", "⚽", "Badajoz", "Pistas deportivas del Campus de Badajoz", "Miércoles, 18:00", "Hugo F.", ["Hugo F.", "Daniel M.", "Álex T.", "Pablo G."], 14),
+      freePlan("p9", "Estudiar juntos para Estadística", "📚", "Badajoz", "Biblioteca Central del Campus de Badajoz", "Mañana, 10:00", "Nerea C.", ["Nerea C.", "Paula S."], 6),
+      freePlan("p10", "Paseo por la Alcazaba al atardecer", "🚶", "Badajoz", "Alcazaba de Badajoz", "Sábado, 19:00", "Giulia R.", ["Giulia R.", "Luca B."], 10, { erasmus: true }),
+      couponPlan("p5", "c6", "Ruta de tapas por el centro", "Sábado, 13:00", "Sofía D.", ["Sofía D.", "Luca B."], 6, { erasmus: true }),
+      couponPlan("p6", "c8", "Bolos Erasmus", "Domingo, 18:00", "Emma K.", ["Emma K.", "Hugo F.", "Irene V."], 8, { erasmus: true }),
+      ...history(),
+    ],
+    messages: [
+      [1, "p3", "Carlos M.", "¡Hola a todos! ¿Quién se anima esta noche? 🍻"],
+      [2, "p3", "Elena P.", "¡Me apunto! ¿A qué hora quedamos?"],
+      [3, "p3", "Carlos M.", "¿A las 22:00 en la puerta del Bar Golfol?"],
+      [4, "p3", "", "Falta 1 persona para desbloquear el cupón", true],
+      [5, "p1", "Lucía R.", "¡Ya somos 3! Cupón desbloqueado 🎉"],
+      [6, "p1", "Javier S.", "Yo llego a las 19:30 justo"],
+      [7, "p2", "Ana P.", "Hi! Marta is from Italy, we can speak English or Spanish 😊"],
+      [8, "p6", "Emma K.", "Hallo! First time bowling in Spain 🎳"],
+      [9, "p8", "Hugo F.", "Faltan 3 para hacer dos equipos completos, ¡animaos!"],
+      [10, "p9", "Nerea C.", "Llevo los ejercicios del tema 4 resueltos 📈"],
+      [11, "p10", "Giulia R.", "Ciao! Someone can show us the best views? 🌅"],
+    ].map(([id, plan, author, text, sys]) => ({ id, plan, author, text, sys: !!sys })),
+    notifications: [
+      { id: 1, emoji: "🎁", text: "Tu plan \"Cena universitaria\" se ha completado. ¡Has ahorrado 4,00 €!", time: "Ayer" },
+      { id: 2, emoji: "🏆", text: "Te faltan pocos planes para tu tarjeta regalo de este mes", time: "Ayer" },
+      { id: 3, emoji: "🔥", text: "Nuevos descuentos en comercios cerca de ti", time: "2 d" },
+    ],
+  };
+}
+
+// ---------------------------------------------------------------- Estado (guardado en este navegador)
+const KEY = "uniplan-demo-v1";
+let S;
+try { S = JSON.parse(localStorage.getItem(KEY)); } catch (e) { S = null; }
+if (!S || S.v !== 1) S = initialState();
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* sin almacenamiento: la demo sigue en memoria */ } }
+
+// ---------------------------------------------------------------- Utilidades
+const esc = s => String(s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+const euros = n => n.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+const $ = sel => document.querySelector(sel);
+const plan = id => S.plans.find(p => p.id === id);
+const couponOf = p => p.couponId ? CPN[p.couponId] : null;
+const minMembers = p => couponOf(p)?.min ?? 2;
+const unlocked = p => p.members.length >= minMembers(p);
+const myPlans = () => S.plans.filter(p => p.members.includes(ME));
+const plansThisMonth = () => myPlans().filter(p => p.completed).length;
+const redeemedCount = () => myPlans().filter(p => p.redeemed).length + S.redeemedCoupons.length;
+const saved = () => myPlans().filter(p => p.redeemed).reduce((a, p) => a + couponOf(p).save, 0) + S.redeemedCoupons.reduce((a, id) => a + CPN[id].save, 0);
+const nextTier = () => TIERS.find(t => plansThisMonth() < t.need);
+const mapsUrl = p => p.maps || "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(`${p.place}, ${p.city}`);
+const bizMaps = b => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(`${b.name}, ${b.address}`);
+const monthName = () => new Date().toLocaleDateString("es-ES", { month: "long" });
+const AVC = ["#E57373", "#64B5F6", "#81C784", "#FFB74D", "#BA68C8", "#4DB6AC", "#F06292", "#7986CB"];
+function hash(s) { let h = 0; for (const ch of s) h = (h * 31 + ch.codePointAt(0)) | 0; return Math.abs(h); }
+const av = (name, extra = "") => `<span class="av" style="background:${name === ME ? "var(--green)" : AVC[hash(name) % AVC.length]}"${extra}>${esc([...name][0].toUpperCase())}</span>`;
+const avatars = (names, max = 3) => `<span class="avatars">${names.slice(0, max).map(n => av(n)).join("")}${names.length > max ? `<span class="more">+${names.length - max}</span>` : ""}</span>`;
+const progBadge = (cur, need) => `<span class="prog ${cur >= need ? "ok" : ""}">${Math.min(cur, need)}/${need}</span>`;
+
+const I = {
+  back: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>',
+  pin: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/></svg>',
+  down: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>',
+  bell: '<svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 002 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4a1.5 1.5 0 00-3 0v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>',
+  home: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>',
+  search: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>',
+  cal: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V10h14v10zM7 12h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2zm-8 4h2v2H7zm4 0h2v2h-2z"/></svg>',
+  user: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>',
+  plus: '<svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>',
+  share: '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11A2.99 2.99 0 0018 8a3 3 0 10-3-3c0 .24.04.47.09.7L8.04 9.81A2.99 2.99 0 006 9a3 3 0 100 6c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65A2.92 2.92 0 1018 16.08z"/></svg>',
+  bookmark: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 3H7a2 2 0 00-2 2v16l7-3 7 3V5a2 2 0 00-2-2zm0 15l-5-2.18L7 18V5h10v13z"/></svg>',
+  bookmarkOn: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 3H7a2 2 0 00-2 2v16l7-3 7 3V5a2 2 0 00-2-2z"/></svg>',
+  dir: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.71 11.29l-9-9a1 1 0 00-1.42 0l-9 9a1 1 0 000 1.42l9 9a1 1 0 001.42 0l9-9a1 1 0 000-1.42zM14 14.5V12h-4v3H8v-4a1 1 0 011-1h5V7.5l3.5 3.5-3.5 3.5z"/></svg>',
+  more: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 8a2 2 0 100-4 2 2 0 000 4zm0 2a2 2 0 100 4 2 2 0 000-4zm0 6a2 2 0 100 4 2 2 0 000-4z"/></svg>',
+  send: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>',
+  chev: '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="color:var(--muted)"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>',
+  heart: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>',
+  gift: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 6h-2.18c.11-.31.18-.65.18-1a3 3 0 00-5.5-1.65l-.5.67-.5-.68A3 3 0 006 5c0 .35.07.69.18 1H4a2 2 0 00-2 2v2a1 1 0 001 1h18a1 1 0 001-1V8a2 2 0 00-2-2zM9 4a1 1 0 110 2 1 1 0 010-2zm6 0a1 1 0 110 2 1 1 0 010-2zM3 13v7a2 2 0 002 2h6v-9H3zm10 9h6a2 2 0 002-2v-7h-8v9z"/></svg>',
+  gear: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.14 12.94a7.14 7.14 0 000-1.88l2.03-1.58a.5.5 0 00.12-.64l-1.92-3.32a.5.5 0 00-.6-.22l-2.39.96a7.03 7.03 0 00-1.63-.94l-.36-2.54a.5.5 0 00-.5-.42h-3.84a.5.5 0 00-.49.42l-.36 2.54c-.59.24-1.13.56-1.63.94l-2.39-.96a.5.5 0 00-.6.22L2.66 8.84a.5.5 0 00.12.64l2.03 1.58a7.14 7.14 0 000 1.88l-2.03 1.58a.5.5 0 00-.12.64l1.92 3.32c.13.22.39.3.6.22l2.39-.96c.5.38 1.04.7 1.63.94l.36 2.54c.05.24.25.42.49.42h3.84c.24 0 .45-.18.49-.42l.36-2.54c.59-.24 1.13-.56 1.63-.94l2.39.96c.22.08.47 0 .6-.22l1.92-3.32a.5.5 0 00-.12-.64l-2.03-1.58zM12 15.6a3.6 3.6 0 110-7.2 3.6 3.6 0 010 7.2z"/></svg>',
+  shield: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>',
+  verified: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23 12l-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.69 3.1 5.5l.34 3.7L1 12l2.44 2.79-.34 3.7 3.61.82L8.6 22.5l3.4-1.47 3.4 1.46 1.89-3.19 3.61-.82-.34-3.69L23 12zm-12.91 4.72l-3.8-3.81 1.48-1.48 2.32 2.33 5.85-5.87 1.48 1.48-7.33 7.35z"/></svg>',
+  people: '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>',
+  map: '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9a.5.5 0 00-.36.48V20.5a.5.5 0 00.66.47L9 18.9l6 2.1 5.64-1.9a.5.5 0 00.36-.48V3.5a.5.5 0 00-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>',
+};
+
+// ---------------------------------------------------------------- Navegación
+const TABS = ["home", "explore", "myplans", "profile"];
+let stack = [{ name: "home" }];
+const ui = { cat: null, group: null, ecat: null, query: "", planTab: 0, menu: null, form: null, revealCode: null };
+const cur = () => stack[stack.length - 1];
+function go(name, params = {}) { stack.push({ name, ...params }); ui.menu = null; render(true); }
+function back() { if (stack.length > 1) stack.pop(); ui.menu = null; render(true); }
+function tab(name) { stack = [{ name }]; ui.menu = null; render(true); }
+
+// ---------------------------------------------------------------- Acciones
+function notify(emoji, text, kind) {
+  S.notifications.unshift({ id: S.nextId++, emoji, text, time: "Ahora" });
+  S.unread++;
+  if (S.notify[kind]) toast(`${emoji} ${text}`);
+}
+function sys(planId, text) { S.messages.push({ id: S.nextId++, plan: planId, author: "", text, sys: true }); }
+function replacePlan(p) { const i = S.plans.findIndex(x => x.id === p.id); if (i >= 0) S.plans[i] = p; }
+function checkUnlocked(before, after) {
+  const c = couponOf(after);
+  if (c && !unlocked(before) && unlocked(after)) {
+    sys(after.id, `Cupón desbloqueado (${after.members.length}/${c.min} personas) 🎉`);
+    if (after.members.includes(ME)) notify("🎁", `¡Cupón desbloqueado! ${c.title} en ${BIZ[c.biz].name}`, "plans");
+  }
+}
+function checkRewards(before) {
+  const now = plansThisMonth();
+  TIERS.filter(t => before < t.need && now >= t.need).forEach(t => notify(t.emoji, `¡Premio desbloqueado! Ya puedes canjear: ${t.title}`, "rewards"));
+}
+function joinPlan(id) {
+  const p = plan(id);
+  if (!p || p.members.includes(ME) || p.members.length >= p.max) return;
+  const after = { ...p, members: [...p.members, ME] };
+  replacePlan(after); sys(id, "Te has unido al plan"); checkUnlocked(p, after); save();
+}
+function leavePlan(id) {
+  const p = plan(id); if (!p || p.completed) return;
+  replacePlan({ ...p, members: p.members.filter(m => m !== ME) }); sys(id, "Has salido del plan"); save();
+}
+function createPlan(f) {
+  const id = "p" + S.nextId++;
+  const c = f.couponId ? CPN[f.couponId] : null;
+  const p = {
+    id, title: f.title, emoji: f.emoji, city: c ? BIZ[c.biz].city : S.city, place: f.place, maps: f.maps || null,
+    when: f.when, creator: ME, members: [ME], max: f.max, couponId: f.couponId || null, erasmus: f.erasmus, redeemed: false, completed: false,
+  };
+  S.plans.unshift(p);
+  sys(id, c ? `Plan creado. Faltan ${c.min - 1} personas para desbloquear "${c.title}"` : "Plan creado. Comparte el plan para que se una más gente");
+  save(); simulateJoins(id); return id;
+}
+function simulateJoins(id) {
+  const names = [...FAKE].sort(() => Math.random() - .5).slice(0, 3);
+  names.forEach((name, k) => setTimeout(() => {
+    const p = plan(id);
+    if (!p || !p.members.includes(ME) || p.completed || p.members.length >= p.max || p.members.includes(name)) return;
+    const after = { ...p, members: [...p.members, name] };
+    replacePlan(after); sys(id, `${name} se ha unido al plan`);
+    notify("👋", `${name} se ha unido a tu plan "${p.title}"`, "plans");
+    checkUnlocked(p, after); save(); softRender();
+  }, 4000 * (k + 1)));
+}
+function sendMessage(id, text) {
+  text = text.trim(); if (!text) return;
+  S.messages.push({ id: S.nextId++, plan: id, author: ME, text, sys: false }); save();
+  const others = plan(id).members.filter(m => m !== ME);
+  if (others.length) setTimeout(() => {
+    S.messages.push({ id: S.nextId++, plan: id, author: others[Math.floor(Math.random() * others.length)], text: REPLIES[Math.floor(Math.random() * REPLIES.length)], sys: false });
+    save(); softRender();
+  }, 1500);
+}
+function redeemPlan(id) {
+  const p = plan(id), c = p && couponOf(p);
+  if (!c || !unlocked(p) || p.redeemed) return;
+  const before = plansThisMonth();
+  replacePlan({ ...p, redeemed: true, completed: true });
+  sys(id, `Cupón canjeado en ${BIZ[c.biz].name} ✅`);
+  notify("✅", `Has canjeado "${c.title}" y ahorrado ${euros(c.save)}`, "plans");
+  checkRewards(before); save();
+}
+function completePlan(id) {
+  const p = plan(id); if (!p || p.completed || p.couponId || !unlocked(p)) return;
+  const before = plansThisMonth();
+  replacePlan({ ...p, completed: true }); sys(id, "¡Plan completado! Suma a vuestros premios del mes 🏆");
+  checkRewards(before); save();
+}
+function redeemCoupon(cid) {
+  const c = CPN[cid]; if (c.min > 1 || S.redeemedCoupons.includes(cid)) return;
+  S.redeemedCoupons.push(cid);
+  notify("✅", `Has canjeado "${c.title}" en ${BIZ[c.biz].name} y ahorrado ${euros(c.save)}`, "coupons"); save();
+}
+function claimReward(tid) {
+  const t = TIERS.find(x => x.id === tid);
+  if (plansThisMonth() < t.need || S.claimed[tid]) return;
+  S.claimed[tid] = "DEMO-" + [0, 0, 0].map(() => 1000 + Math.floor(Math.random() * 9000)).join("-");
+  notify(t.emoji, `Has canjeado tu premio: ${t.title}`, "rewards"); save();
+}
+function toast(text) {
+  const el = document.createElement("div"); el.className = "toast"; el.textContent = text;
+  $("#toast").appendChild(el); setTimeout(() => el.remove(), 3500);
+}
+async function copy(text, okMsg = "Copiado") {
+  try { await navigator.clipboard.writeText(text); toast(okMsg); }
+  catch (e) { toast("No se pudo copiar automáticamente: " + text); }
+}
+
+// ---------------------------------------------------------------- Componentes
+function couponCard(c) {
+  const b = BIZ[c.biz];
+  return `<button class="coupon ${c.featured ? "featured" : ""}" data-go="coupon" data-id="${c.id}">
+    <span class="tile" aria-hidden="true">${c.emoji}</span>
+    <span class="body">
+      <span class="title">${esc(c.title)}</span>
+      <span class="small muted">${esc(b.name)}</span>
+      <span class="row"><span class="grow kind ${c.min > 1 ? "group" : "solo"}">${c.min > 1 ? `👥 Grupo ${c.min}+` : "👤 Individual"}</span><span class="btn">Canjear</span></span>
+    </span>
+  </button>`;
+}
+function planCard(p) {
+  const c = couponOf(p), joined = p.members.includes(ME), full = p.members.length >= p.max;
+  return `<div class="plancard">
+    <button class="tile" style="border:0" data-go="chat" data-id="${p.id}" aria-label="Abrir ${esc(p.title)}">${p.emoji}</button>
+    <div class="body">
+      <b style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.title)}</b>
+      <span class="small muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(c ? BIZ[c.biz].name : p.place)} · ${esc(p.when)}</span>
+      <span>${c ? `<span class="pill">🏷️ ${esc(c.label)}</span>` : p.erasmus ? `<span class="pill">🌍 Erasmus friendly</span>` : ""}</span>
+      <span class="row">${avatars(p.members)}<span class="grow"></span>${c ? progBadge(p.members.length, c.min) : `<span class="tiny bold">${p.members.length}/${p.max}</span>`}</span>
+      ${joined ? `<button class="btn ghost" data-go="chat" data-id="${p.id}">Abrir chat</button>`
+        : `<button class="btn" data-act="join-open" data-id="${p.id}" ${full ? "disabled" : ""}>${full ? "Completo" : "Unirme"}</button>`}
+    </div>
+  </div>`;
+}
+function topbar(title, sub = "", { green = false, right = "" } = {}) {
+  return `<div class="topbar ${green ? "green" : ""}">
+    <button class="icon-btn" data-act="back" aria-label="Volver">${I.back}</button>
+    <div class="t"><b>${esc(title)}</b>${sub ? `<span>${esc(sub)}</span>` : ""}</div>${right}
+  </div>`;
+}
+function catChips(sel, key) {
+  return `<div class="chips" role="group" aria-label="Categorías">
+    <button class="chip" aria-pressed="${sel === null}" data-act="${key}" data-v="">Todos</button>
+    ${Object.entries(CATS).map(([k, [l, e]]) => `<button class="chip" aria-pressed="${sel === k}" data-act="${key}" data-v="${k}">${e} ${l}</button>`).join("")}
+  </div>`;
+}
+
+// ---------------------------------------------------------------- Pantallas
+const screens = {};
+
+screens.home = () => {
+  const list = DATA.coupons
+    .filter(c => BIZ[c.biz].city === S.city)
+    .filter(c => !ui.cat || BIZ[c.biz].cat === ui.cat)
+    .filter(c => ui.group === null || (c.min > 1) === ui.group)
+    .sort((a, b) => b.featured - a.featured);
+  return `
+  <header class="home-head">
+    <div style="position:relative;justify-self:start">
+      <button class="city" data-act="menu" data-v="city" aria-haspopup="true" aria-expanded="${ui.menu === "city"}">${I.pin}${esc(S.city)}${I.down}</button>
+      ${ui.menu === "city" ? `<div class="menu" role="menu">${CITIES.map(c => `<button role="menuitem" data-act="city" data-v="${c}">${c}</button>`).join("")}</div>` : ""}
+    </div>
+    <span class="logo"><span class="u">Uni</span><span class="p">Plan</span></span>
+    <button class="bell" data-go="notifications" aria-label="Notificaciones">${I.bell}${S.unread ? `<span class="badge" id="bell-badge">${S.unread}</span>` : ""}</button>
+  </header>
+  <div class="stack">
+    <section class="hero">
+      <img src="${S.city === "Cáceres" ? BANNERS.caceres : BANNERS.badajoz}" alt="${S.city === "Cáceres" ? "Plaza Mayor de Cáceres" : "Puerta de Palmas, Badajoz"}" width="1200" height="600">
+      <h2>¡Descubre tus mejores UniPlanes y ahorra con amigos en la <em>UEx!</em></h2>
+    </section>
+    <h1>Mis Cupones y Planes</h1>
+    ${catChips(ui.cat, "cat")}
+    <div class="chips" role="group" aria-label="Tipo de cupón">
+      ${[[null, "Todos"], [false, "👤 Individuales"], [true, "👥 En grupo"]].map(([v, l]) => `<button class="chip y" aria-pressed="${ui.group === v}" data-act="group" data-v="${v}">${l}</button>`).join("")}
+    </div>
+    ${list.length ? list.map(couponCard).join("") : `<div class="empty"><span class="e">🔍</span>Todavía no hay cupones así en ${esc(S.city)}.</div>`}
+  </div>`;
+};
+
+function exploreResults() {
+  const q = ui.query.trim().toLowerCase();
+  const coupons = DATA.coupons.filter(c => BIZ[c.biz].city === S.city && (!ui.ecat || BIZ[c.biz].cat === ui.ecat));
+  if (q) {
+    const r = coupons.filter(c => c.title.toLowerCase().includes(q) || BIZ[c.biz].name.toLowerCase().includes(q));
+    return `<h3 class="section-head">Resultados (${r.length})</h3>${r.length ? r.map(couponCard).join("") : `<div class="empty"><span class="e">🤷</span>No encontramos nada con «${esc(ui.query)}».</div>`}`;
+  }
+  const near = DATA.biz.filter(b => b.city === S.city && (!ui.ecat || b.cat === ui.ecat)).sort((a, b) => a.dist - b.dist);
+  const plans = S.plans.filter(p => !p.completed && p.city === S.city && (!ui.ecat || (couponOf(p) && BIZ[couponOf(p).biz].cat === ui.ecat)));
+  return `
+    <h3 class="section-head">Cerca de ti</h3>
+    <div class="hscroll">${near.map(b => {
+      const c = DATA.coupons.find(x => x.biz === b.id);
+      return `<button class="mini" data-go="coupon" data-id="${c.id}"><span class="e">${c.emoji}</span><b>${esc(b.name)}</b><span class="small muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%">${esc(c.title)}</span><span class="tiny row" style="gap:2px;color:var(--green)">${I.pin}<span style="color:var(--fg)">${b.dist} m</span></span></button>`;
+    }).join("")}</div>
+    <h3 class="section-head">Planes en grupo</h3>
+    ${plans.length ? `<div class="hscroll">${plans.map(planCard).join("")}</div>` : `<p class="muted">No hay planes abiertos. ¡Crea el primero con el botón +!</p>`}
+    <h3 class="section-head">Lo más popular</h3>
+    ${coupons.filter(c => c.featured).map(couponCard).join("")}`;
+}
+screens.explore = () => `
+  <div class="stack" style="padding-top:12px">
+    <h1>Explorar</h1>
+    <label class="search">${I.search}<input id="q" type="search" placeholder="Buscar bares, comercios o planes" value="${esc(ui.query)}" aria-label="Buscar"></label>
+    ${catChips(ui.ecat, "ecat")}
+    <div class="stack" id="results">${exploreResults()}</div>
+  </div>`;
+
+screens.coupon = ({ id }) => {
+  const c = CPN[id], b = BIZ[c.biz], open = S.plans.filter(p => p.couponId === id && !p.completed);
+  const mine = open.find(p => p.members.includes(ME));
+  const ready = open.find(p => p.members.includes(ME) && unlocked(p) && !p.redeemed);
+  const fav = S.favorites.includes(id), soloDone = S.redeemedCoupons.includes(id);
+  let cta;
+  if (c.min === 1) cta = `<button class="btn y block" data-go="redeem" data-coupon="${id}" ${soloDone ? "disabled" : ""}>${soloDone ? "Ya canjeado ✅" : "Canjear cupón"}</button>`;
+  else if (ready) cta = `<button class="btn y block" data-go="redeem" data-plan="${ready.id}">Canjear cupón</button>`;
+  else cta = `<button class="btn y block" disabled>${mine ? `Esperando al grupo (${mine.members.length}/${c.min})` : "Únete a un plan para desbloquearlo"}</button>`;
+  return `
+  <div class="detail-hero" aria-hidden="false">
+    <span aria-hidden="true">${c.emoji}</span>
+    <button class="icon-btn l" data-act="back" aria-label="Volver">${I.back}</button>
+    <button class="icon-btn r" data-act="share-coupon" data-id="${id}" aria-label="Compartir">${I.share}</button>
+  </div>
+  <div class="stack" style="padding-top:16px">
+    <div class="row" style="align-items:flex-start"><h2 class="grow">${esc(b.name)}</h2><span class="discount">${esc(c.label)}</span></div>
+    <h3>${esc(c.title)}</h3>
+    <p class="small muted">Válido hasta el ${c.until}</p>
+    <p class="small row" style="gap:4px;align-items:flex-start"><span style="color:var(--green)">${I.pin}</span><span>A ${b.dist} m · ${esc(b.address)}</span></p>
+    <div class="row" style="flex-wrap:wrap">${c.min > 1 ? `<span class="pill">👥 Grupo de ${c.min}+</span>` : `<span class="pill">👤 Individual</span>`}${c.adult ? `<span class="pill y">🔞 +18</span>` : ""}</div>
+    <div class="actions">
+      <button data-act="fav" data-id="${id}">${fav ? I.bookmarkOn : I.bookmark}${fav ? "Guardado" : "Guardar"}</button>
+      <a href="${bizMaps(b)}" target="_blank" rel="noopener">${I.dir}Cómo llegar</a>
+      <button data-act="share-coupon" data-id="${id}">${I.share}Compartir</button>
+    </div>
+    <h3>Descripción</h3><p>${esc(c.desc)}</p>
+    <h3>Condiciones</h3><ul class="conds">${c.conds.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+    ${c.min === 1 ? `<p class="demo-note">Cupón individual: no necesitas grupo. Enséñalo en ${esc(b.name)} al pagar y listo.</p>` : `
+      <h3 style="margin-top:8px">Únete a un plan</h3>
+      ${open.length ? "" : `<p class="muted">Nadie ha organizado un plan con este cupón todavía. ¡Sé el primero!</p>`}
+      ${open.map(p => {
+        const j = p.members.includes(ME);
+        return `<div class="card row"><div class="grow stack" style="gap:4px"><b>${esc(p.title)}</b><span class="small muted">${esc(p.when)}</span><span class="row">${avatars(p.members)}${progBadge(p.members.length, c.min)}</span></div>
+          ${j ? `<button class="btn ghost" data-go="chat" data-id="${p.id}">Chat</button>` : `<button class="btn" data-act="join-open" data-id="${p.id}" ${mine || p.members.length >= p.max ? "disabled" : ""}>Unirme</button>`}</div>`;
+      }).join("")}
+      ${mine ? "" : `<button class="btn text" style="align-self:flex-start" data-go="create" data-coupon="${id}">+ Organizar un plan en ${esc(b.name)}</button>`}`}
+  </div>
+  <div class="bottom-cta"><div>${cta}</div></div>`;
+};
+
+function newForm(couponId) {
+  return { couponId: couponId || null, type: 0, title: "", place: "", maps: "", day: "Hoy", hour: "21:00", max: 6, erasmus: false };
+}
+const isMaps = t => /^https?:\/\//.test(t) && /(google\.|goo\.gl|maps\.app)/.test(t);
+const hourOk = h => /^([01]?\d|2[0-3]):[0-5]\d$/.test(h);
+function formValid(f) {
+  return (f.couponId || f.place.trim()) && hourOk(f.hour) && (!f.maps.trim() || isMaps(f.maps.trim()));
+}
+screens.create = ({ coupon }) => {
+  if (!ui.form || ui.form.couponId !== (coupon || null)) ui.form = newForm(coupon);
+  const f = ui.form, c = f.couponId ? CPN[f.couponId] : null, b = c ? BIZ[c.biz] : null;
+  const min = c ? c.min : 2;
+  f.max = Math.max(f.max, min);
+  return `${topbar("Crear un UniPlan", b ? b.city : S.city)}
+  <form class="stack" id="create-form" novalidate>
+    ${c ? `<div class="card" style="background:var(--yellow-soft)"><b>${c.emoji} Cupón de ${esc(b.name)}</b><p class="small">${esc(c.title)}. Se desbloquea cuando seáis ${c.min}.</p></div>` : ""}
+    <span class="step">1. ¿Cuál es el plan?</span>
+    <div class="chips" role="group" aria-label="Tipo de plan">${PLAN_TYPES.map(([l, e], i) => `<button type="button" class="chip" aria-pressed="${f.type === i}" data-act="ptype" data-v="${i}">${e} ${l}</button>`).join("")}</div>
+    <label class="f">Describe el plan<input class="input" id="f-title" maxlength="50" placeholder="Ej.: Cañas después del examen de Estadística" value="${esc(f.title)}"></label>
+
+    <span class="step">2. ¿Dónde?</span>
+    ${b ? `<p>📍 ${esc(b.name)} · ${esc(b.address)}</p><a class="btn ghost" style="align-self:flex-start" href="${bizMaps(b)}" target="_blank" rel="noopener">${I.map} Ver en Google Maps</a>` : `
+      <label class="f">Sitio<input class="input" id="f-place" maxlength="80" placeholder="Ej.: Parque del Guadiana, Bar Golfol…" value="${esc(f.place)}"></label>
+      <a class="btn ghost" id="f-mapsbtn" style="align-self:flex-start" target="_blank" rel="noopener" href="#">${I.map} Buscar y marcar en Google Maps</a>
+      <label class="f">Enlace de Google Maps (opcional)<input class="input" id="f-maps" inputmode="url" placeholder="Pega aquí el enlace" value="${esc(f.maps)}">
+        <span class="hint" id="f-maps-hint">En Google Maps, mantén pulsado el sitio para marcarlo → Compartir → Copiar enlace, y pégalo aquí.</span></label>`}
+
+    <span class="step">3. ¿Cuándo?</span>
+    <div class="chips" role="group" aria-label="Día">${WHEN.map(d => `<button type="button" class="chip" aria-pressed="${f.day === d}" data-act="pday" data-v="${d}">${d}</button>`).join("")}</div>
+    <label class="f">Hora (HH:MM)<input class="input" id="f-hour" inputmode="numeric" maxlength="5" value="${esc(f.hour)}"></label>
+
+    <span class="step" id="f-max-label">4. ¿Cuánta gente? Hasta ${f.max} personas</span>
+    <input type="range" id="f-max" min="${min}" max="20" step="1" value="${f.max}" aria-label="Número máximo de personas">
+
+    <label class="row" style="justify-content:space-between;gap:12px"><span><b>🌍 Erasmus friendly</b><br><span class="small muted">Abierto a estudiantes internacionales (español/inglés)</span></span>
+      <input type="checkbox" class="switch" id="f-erasmus" ${f.erasmus ? "checked" : ""}></label>
+  </form>
+  <div class="bottom-cta"><div><button class="btn block" id="f-submit" data-act="create" ${formValid(f) ? "" : "disabled"}>Crear plan y abrir chat</button></div></div>`;
+};
+
+function chatInfo(p) {
+  const c = couponOf(p), need = minMembers(p), ok = unlocked(p);
+  const status = p.redeemed ? "Cupón canjeado ✅" : p.completed ? "Plan completado ✅" : !c ? `${p.members.length} de ${p.max} personas apuntadas`
+    : ok ? `¡Cupón desbloqueado! ${p.members.length} personas · máx. ${p.max}` : `Faltan ${need - p.members.length} personas para desbloquear el cupón`;
+  return `<div class="row"><b class="grow">${c ? `${c.emoji} ${esc(c.title)}` : `${p.emoji} ${esc(p.title)}`}</b>${p.erasmus ? `<span class="pill">🌍 Erasmus</span>` : ""}</div>
+    <div class="row small"><span class="grow">📍 ${esc(p.place)}</span><a class="bold" href="${mapsUrl(p)}" target="_blank" rel="noopener">Ver en Maps</a></div>
+    <div class="bar ${ok ? "ok" : ""}"><i style="width:${Math.min(100, p.members.length / need * 100)}%"></i></div>
+    <span class="small">${status}</span>
+    <span class="tiny muted">${p.members.map(esc).join(" · ")}</span>`;
+}
+function chatMsgs(p) {
+  return S.messages.filter(m => m.plan === p.id).map(m => m.sys ? `<div class="sys">${esc(m.text)}</div>`
+    : m.author === ME ? `<div class="msg mine"><div class="bubble">${esc(m.text)}</div></div>`
+    : `<div class="msg">${av(m.author)}<div><div class="who">${esc(m.author)}</div><div class="bubble">${esc(m.text)}</div></div></div>`).join("");
+}
+function chatCta(p) {
+  const j = p.members.includes(ME), c = couponOf(p);
+  if (!(j && unlocked(p) && !p.completed)) return "";
+  return c ? `<button class="btn y block" data-go="redeem" data-plan="${p.id}">Canjear cupón (${p.members.length}/${c.min})</button>`
+    : `<button class="btn y block" data-act="complete" data-id="${p.id}">✅ ¡Plan hecho! Sumar a mis premios</button>`;
+}
+screens.chat = ({ id }) => {
+  const p = plan(id); if (!p) return "";
+  const j = p.members.includes(ME), c = couponOf(p);
+  const menu = ui.menu === "chat" ? `<div class="menu" style="right:8px;top:52px">${c ? `<button data-go="coupon" data-id="${c.id}">Ver cupón</button>` : ""}${j && !p.completed ? `<button data-act="leave" data-id="${p.id}">Salir del plan</button>` : ""}<button data-act="share-plan" data-id="${p.id}">Compartir plan</button></div>` : "";
+  return `<div class="chat">
+    <div class="topbar green" style="position:relative">
+      <button class="icon-btn" data-act="back" aria-label="Volver">${I.back}</button>
+      <div class="t"><b>Chat: ${esc(p.title)}</b><span>${esc(p.when)} · ${esc(p.city)}</span></div>
+      <button class="icon-btn" data-act="menu" data-v="chat" aria-label="Opciones">${I.more}</button>${menu}
+    </div>
+    <div class="chat-info" id="chat-info">${chatInfo(p)}</div>
+    <div class="msgs" id="msgs">${chatMsgs(p)}</div>
+    <div class="chat-cta" id="chat-cta">${chatCta(p)}</div>
+    ${j ? `<form class="composer" id="composer"><input class="input" id="msg" autocomplete="off" placeholder="Escribe un mensaje…" aria-label="Mensaje"><button class="icon-btn" style="color:var(--green)" aria-label="Enviar">${I.send}</button></form>`
+      : `<div class="composer"><button class="btn block" data-act="join" data-id="${p.id}" ${p.members.length >= p.max || p.completed ? "disabled" : ""}>${p.completed ? "Plan finalizado" : "Unirme al plan para chatear"}</button></div>`}
+  </div>`;
+};
+
+screens.redeem = ({ plan: pid, coupon: cid }) => {
+  const p = pid ? plan(pid) : null, c = p ? couponOf(p) : CPN[cid], b = BIZ[c.biz];
+  const done = p ? p.redeemed : S.redeemedCoupons.includes(c.id);
+  return `${topbar("Canjear cupón")}
+  <div class="stack">
+    <div class="coupon" style="cursor:default"><span class="tile" style="width:88px">${c.emoji}</span><span class="body"><span class="title">${esc(c.title)}</span><span class="small muted">${esc(b.name)}</span><span class="small">${p ? `Plan: ${esc(p.title)} · ${p.members.length} personas` : "Cupón individual"}</span></span></div>
+    <div class="qr-card">
+      ${done ? `<span style="font-size:64px">✅</span><h2>¡Cupón canjeado!</h2><p>Has ahorrado ${euros(c.save)}. ${p ? "¡Disfrutad del plan!" : "¡Gracias por comprar en el comercio local!"}</p>`
+        : `<div id="qr" data-text="${esc(`UNIPLAN|${c.id}|${p ? p.id : "solo"}|${p ? p.members.length : 1}|${S.user.email}`)}"></div>
+           <p>${p ? "Enseña este código en el local para aplicar el descuento. Validadlo juntos: tenéis que estar todo el grupo." : `Enseña este código en ${esc(b.name)} al pagar para aplicar tu descuento.`}</p>
+           <span class="small muted">🕒 Válido hasta el ${c.until}</span>`}
+    </div>
+    <h3>Condiciones</h3><ul class="conds">${c.conds.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+  </div>
+  <div class="bottom-cta"><div>${done ? `<button class="btn block" data-act="back">Volver</button>`
+    : `<button class="btn block" data-act="${p ? "redeem-plan" : "redeem-coupon"}" data-id="${p ? p.id : c.id}">Simular validación del comercio</button>`}</div></div>`;
+};
+
+screens.myplans = () => {
+  const mine = myPlans();
+  const lists = [mine.filter(p => !p.completed), mine.filter(p => !p.completed && p.creator === ME), mine.filter(p => p.completed)];
+  const shown = lists[ui.planTab];
+  return `<div class="stack" style="padding-top:12px">
+    <h1 style="text-align:center">Mis Planes</h1>
+    <div class="tabs" role="tablist">${["Próximos", "Creados por mí", "Completados"].map((l, i) => `<button role="tab" aria-selected="${ui.planTab === i}" data-act="ptab" data-v="${i}">${l}${i === 2 ? ` (${lists[2].length})` : ""}</button>`).join("")}</div>
+    ${shown.length ? shown.map(p => {
+      const c = couponOf(p);
+      return `<button class="prow" data-go="chat" data-id="${p.id}"><span class="tile">${p.emoji}</span>
+        <span class="grow stack" style="gap:2px"><b>${esc(p.title)}</b><span class="small" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(c ? BIZ[c.biz].name : p.place)}</span><span class="small muted">${esc(p.when)}</span>${avatars(p.members)}</span>
+        ${p.completed ? `<span class="check">✓<br><span class="tiny">${p.members.length}/${p.members.length}</span></span>` : progBadge(p.members.length, minMembers(p))}</button>`;
+    }).join("") : `<div class="empty"><span class="e">🗓️</span>${ui.planTab === 2 ? "Aún no has completado ningún plan" : "No tienes planes. Únete a uno desde Explorar o crea el tuyo con +"}</div>`}
+  </div>`;
+};
+
+function rewardsSummary() {
+  const done = plansThisMonth(), next = nextTier(), target = next ? next.need : TIERS[TIERS.length - 1].need;
+  return `<button class="rewards-card" data-go="rewards">
+    <span class="row" style="width:100%"><b class="grow">🏆 Premios de ${monthName()}</b><b style="color:var(--green)">${done} planes</b></span>
+    <span class="bar" style="width:100%"><i style="width:${Math.min(100, done / target * 100)}%"></i></span>
+    <span class="small">${next ? `Te ${next.need - done === 1 ? "falta 1 plan" : `faltan ${next.need - done} planes`} para: ${next.title}` : "¡Has desbloqueado todos los premios del mes!"}</span>
+  </button>`;
+}
+screens.profile = () => `
+  <div class="profile-head">
+    ${av(S.user.name)}
+    <h2 style="color:#fff">${esc(S.user.name)}</h2>
+    <span class="row" style="gap:4px"><span style="color:var(--yellow)">${I.verified}</span>Estudiante UEx verificado</span>
+    <span class="small" style="opacity:.85">${esc(S.user.email)}</span>
+  </div>
+  <div class="stats">
+    <div><b>${redeemedCount()}</b><span class="small">Cupones<br>canjeados</span></div>
+    <div><b>${plansThisMonth()}</b><span class="small">Planes<br>este mes</span></div>
+    <div><b>${euros(saved())}</b><span class="small">Ahorrados</span></div>
+  </div>
+  ${rewardsSummary()}
+  <nav class="menu-list">
+    <button class="menu-item" data-act="tab" data-v="myplans">${I.cal}<span class="grow">Mis planes</span>${I.chev}</button>
+    <button class="menu-item" data-go="favorites">${I.heart}<span class="grow">Favoritos (${S.favorites.length})</span>${I.chev}</button>
+    <button class="menu-item" data-go="invite">${I.people}<span class="grow">Invita a amigos</span><span class="tag">¡Gana premios!</span>${I.chev}</button>
+    <button class="menu-item" data-go="notifications">${I.bell}<span class="grow">Notificaciones</span>${I.chev}</button>
+    <button class="menu-item" data-go="settings">${I.gear}<span class="grow">Ajustes</span><span class="tag">Tema y avisos</span>${I.chev}</button>
+    <button class="menu-item" data-go="privacy">${I.shield}<span class="grow">Privacidad y datos</span>${I.chev}</button>
+    <button class="menu-item" data-go="verify">${I.verified}<span class="grow">Verificar correo UEx</span><span class="tag">Demo</span>${I.chev}</button>
+  </nav>`;
+
+screens.rewards = () => {
+  const done = plansThisMonth();
+  return `${topbar("Premios mensuales", monthName()[0].toUpperCase() + monthName().slice(1))}
+  <div class="stack">
+    <div class="big-count"><b>${done}</b>planes completados este mes</div>
+    ${TIERS.map(t => {
+      const ok = done >= t.need, code = S.claimed[t.id];
+      return `<div class="card tier">
+        <div class="row"><span style="font-size:34px">${t.emoji}</span><div class="grow"><b>${t.title}</b><p class="small muted">${t.need} planes en el mes</p></div></div>
+        <div class="bar ${ok ? "ok" : ""}"><i style="width:${Math.min(100, done / t.need * 100)}%"></i></div>
+        <div class="row"><span class="grow bold" style="font-variant-numeric:tabular-nums">${Math.min(done, t.need)}/${t.need}</span>
+          ${code ? `<button class="btn ghost" data-act="show-code" data-id="${t.id}">${ui.revealCode === t.id ? "Ocultar código" : "Ver código"}</button>`
+            : ok ? `<button class="btn" data-act="claim" data-id="${t.id}">Canjear</button>` : `<span class="small bold">🔒 Te faltan ${t.need - done}</span>`}</div>
+        ${code && ui.revealCode === t.id ? `<div class="card" style="background:var(--green-soft);text-align:center"><b style="font-size:20px;letter-spacing:.04em">${code}</b><p class="tiny muted">Código de demostración, no es real</p><button class="btn text" data-act="copy" data-v="${code}">Copiar</button></div>` : ""}
+      </div>`;
+    }).join("")}
+    <h3>¿Qué cuenta como plan?</h3>
+    <p class="muted">Cada plan completado con al menos 2 personas: al canjear un cupón de grupo en un comercio, o al marcar en el chat que el plan se ha hecho. Los cupones individuales no cuentan. El contador se reinicia el día 1 de cada mes.</p>
+  </div>`;
+};
+
+screens.settings = () => `${topbar("Ajustes")}
+  <div class="stack">
+    <h3 style="color:var(--green);margin-top:8px">Apariencia</h3>
+    <div>${[["light", "Claro (predeterminado)"], ["dark", "Oscuro"], ["system", "Automático (como el móvil)"]].map(([v, l]) =>
+      `<label class="radio"><input type="radio" name="theme" data-act="theme" value="${v}" ${S.theme === v ? "checked" : ""}>${l}</label>`).join("")}</div>
+    <h3 style="color:var(--green);margin-top:12px">Avisos</h3>
+    <p class="small muted">En la versión web los avisos aparecen dentro de la app. Las notificaciones del móvil están en la app de Android.</p>
+    ${[["plans", "Planes y chats", "Cuando alguien se une a tu plan o se desbloquea un cupón"], ["coupons", "Cupones", "Canjes y nuevas ofertas de comercios cerca de ti"], ["rewards", "Premios mensuales", "Cuando desbloqueas un premio"]].map(([k, t, d]) =>
+      `<label class="row" style="justify-content:space-between;gap:12px;padding:8px 0"><span><b>${t}</b><br><span class="small muted">${d}</span></span><input type="checkbox" class="switch" data-act="notify" data-v="${k}" ${S.notify[k] ? "checked" : ""}></label>`).join("")}
+    <button class="btn ghost" style="align-self:flex-start" data-act="test-toast">Probar un aviso</button>
+    <h3 style="color:var(--green);margin-top:12px">Demo</h3>
+    <p class="small muted">Lo que haces en la demo se guarda en este navegador. Puedes volver a empezar con los datos de ejemplo.</p>
+    ${ui.menu === "reset" ? `<div class="card stack"><b>¿Reiniciar la demo?</b><p class="small">Se borrarán tus planes, mensajes y canjes de esta demo.</p><div class="row"><button class="btn" data-act="reset-yes">Sí, reiniciar</button><button class="btn text" data-act="menu" data-v="">Cancelar</button></div></div>`
+      : `<button class="btn ghost" style="align-self:flex-start" data-act="menu" data-v="reset">Reiniciar demo</button>`}
+    <p class="small muted" style="margin-top:12px">UniPlan web 0.5 · versión de demostración</p>
+  </div>`;
+
+screens.invite = () => {
+  const text = `¡Únete a UniPlan con mi código ${S.user.code} y ganamos premios los dos! El cupón es la excusa, el grupo es el plan. 🎉`;
+  return `${topbar("Invita a amigos", "", { green: true })}
+  <div class="stack" style="text-align:center;align-items:center;padding-top:16px">
+    <span style="font-size:64px">🎁🙌</span>
+    <h2>¡Invita a tus amigos y gana premios!</h2>
+    <p>Por cada amigo que se registre obtendréis beneficios los dos.</p>
+    <div class="card stack" style="width:100%;background:var(--green-soft);align-items:center">
+      <span class="tiny bold" style="letter-spacing:.08em">TU CÓDIGO</span>
+      <b style="font-family:var(--font-display);font-size:30px">${esc(S.user.code)}</b>
+      <button class="btn ghost" data-act="copy" data-v="${esc(S.user.code)}">Copiar código</button>
+      <a class="btn block" href="https://wa.me/?text=${encodeURIComponent(text)}" target="_blank" rel="noopener">Compartir por WhatsApp</a>
+      <button class="btn text" data-act="copy" data-v="${esc(text)}">Copiar mensaje</button>
+    </div>
+    <p class="small muted">Compártelo en el grupo de WhatsApp de clase y convertid el chat en un plan de verdad.</p>
+  </div>`;
+};
+
+screens.notifications = () => {
+  S.unread = 0; save();
+  return `${topbar("Notificaciones")}<div>${S.notifications.map(n => `<div class="notif"><span class="e">${n.emoji}</span><span class="grow">${esc(n.text)}</span><span class="tiny muted">${esc(n.time)}</span></div>`).join("")}</div>`;
+};
+
+screens.favorites = () => {
+  const list = DATA.coupons.filter(c => S.favorites.includes(c.id));
+  return `${topbar("Favoritos")}<div class="stack">${list.length ? list.map(couponCard).join("") : `<div class="empty"><span class="e">🔖</span>Guarda cupones con el botón «Guardar» para tenerlos a mano.</div>`}</div>`;
+};
+
+screens.privacy = () => `${topbar("Privacidad y datos")}
+  <div class="stack"><p>UniPlan trata tus datos conforme al RGPD y la LOPDGDD. Tu correo institucional solo se usa para verificar que eres estudiante.</p>
+  <p>No enviamos comunicaciones comerciales ni usamos tu ubicación sin tu consentimiento explícito.</p>
+  <p>Las promociones de bebidas alcohólicas son solo para mayores de 18 años y fomentan siempre el consumo responsable.</p>
+  <p class="demo-note">Esta es una versión de demostración: no se envía ningún dato a ningún servidor.</p></div>`;
+
+screens.verify = () => {
+  const v = ui.verify || (ui.verify = { step: 0, name: "", email: "", ok1: false, ok2: false, code: "", err: "" });
+  return `${topbar("Verificación UEx", "Demostración")}
+  <form class="stack" id="verify-form" novalidate style="padding-top:8px">
+    <p class="muted">Así sería el acceso en la app real: solo estudiantes con correo de la Universidad de Extremadura.</p>
+    ${v.step === 0 ? `
+      <label class="f">Nombre<input class="input" id="v-name" value="${esc(v.name)}" autocomplete="name"></label>
+      <label class="f">Correo de la UEx<input class="input ${v.err ? "err" : ""}" id="v-email" type="email" placeholder="tunombre@alumnos.unex.es" value="${esc(v.email)}">
+        <span class="hint ${v.err ? "err" : ""}">${esc(v.err || "Solo estudiantes verificados de la Universidad de Extremadura")}</span></label>
+      <label class="row small"><input type="checkbox" id="v-ok1" ${v.ok1 ? "checked" : ""}> Acepto la política de privacidad (RGPD y LOPDGDD)</label>
+      <label class="row small"><input type="checkbox" id="v-ok2" ${v.ok2 ? "checked" : ""}> Confirmo que soy mayor de 18 años</label>
+      <button class="btn block" data-act="verify-send">Verificar mi correo</button>`
+    : `
+      <p>Hemos enviado un código de 6 dígitos a <b>${esc(v.email)}</b></p>
+      <p class="small muted">(Demo: tu código es ${v.sent})</p>
+      <label class="f">Código de verificación<input class="input ${v.err ? "err" : ""}" id="v-code" inputmode="numeric" maxlength="6" value="${esc(v.code)}"><span class="hint err">${esc(v.err)}</span></label>
+      <button class="btn block" data-act="verify-check">Entrar</button>
+      <button class="btn text" data-act="verify-reset">Cambiar correo</button>`}
+  </form>`;
+};
+
+// ---------------------------------------------------------------- Render
+function applyTheme() {
+  const dark = S.theme === "dark" || (S.theme === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.classList.toggle("dark", dark);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.content = dark ? "#121412" : "#F7F7F5";
+}
+function navBar(active) {
+  const b = (n, l, icon) => `<button data-act="tab" data-v="${n}" ${active === n ? 'aria-current="page"' : ""}>${icon}<span>${l}</span></button>`;
+  return `<nav class="nav" aria-label="Principal"><div>${b("home", "Inicio", I.home)}${b("explore", "Explorar", I.search)}
+    <button data-go="create" aria-label="Crear plan"><span class="plus">${I.plus}</span></button>${b("myplans", "Planes", I.cal)}${b("profile", "Perfil", I.user)}</div></nav>`;
+}
+function render(scrollTop = false) {
+  applyTheme();
+  const s = cur(), isTab = TABS.includes(s.name);
+  const app = $("#app");
+  app.className = isTab ? "" : s.name === "chat" ? "chat-mode" : "no-nav";
+  app.innerHTML = (screens[s.name] || screens.home)(s) + (isTab ? navBar(s.name) : "");
+  if (scrollTop) window.scrollTo(0, 0);
+  afterRender(s);
+}
+function afterRender(s) {
+  const qr = $("#qr");
+  if (qr && window.QRCode) new QRCode(qr, { text: qr.dataset.text, width: 400, height: 400, correctLevel: QRCode.CorrectLevel.M });
+  else if (qr) qr.textContent = "No se pudo cargar el generador de QR.";
+  if (s.name === "chat") { const m = $("#msgs"); if (m) m.scrollTop = m.scrollHeight; }
+  if (s.name === "create") updateCreateForm();
+}
+// Actualiza sin redibujar la pantalla entera mientras se escribe (para no cerrar el teclado).
+function softRender() {
+  const s = cur(), typing = document.activeElement && /INPUT|TEXTAREA/.test(document.activeElement.tagName);
+  if (s.name === "chat") {
+    const p = plan(s.id), msgs = $("#msgs");
+    if (p && msgs) {
+      const atBottom = msgs.scrollHeight - msgs.scrollTop - msgs.clientHeight < 80;
+      $("#chat-info").innerHTML = chatInfo(p); msgs.innerHTML = chatMsgs(p); $("#chat-cta").innerHTML = chatCta(p);
+      if (atBottom) msgs.scrollTop = msgs.scrollHeight;
+      return;
+    }
+  }
+  if (!typing) render();
+}
+
+// ---------------------------------------------------------------- Eventos
+function updateCreateForm() {
+  const f = ui.form; if (!f) return;
+  const btn = $("#f-mapsbtn");
+  if (btn) {
+    btn.href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(`${f.place} ${S.city}`.trim());
+    btn.style.opacity = f.place.trim() ? "1" : ".45"; btn.style.pointerEvents = f.place.trim() ? "" : "none";
+  }
+  const mapsBad = f.maps.trim() && !isMaps(f.maps.trim());
+  const mi = $("#f-maps"), mh = $("#f-maps-hint");
+  if (mi) { mi.classList.toggle("err", !!mapsBad); mh.classList.toggle("err", !!mapsBad); mh.textContent = mapsBad ? "Eso no parece un enlace de Google Maps" : "En Google Maps, mantén pulsado el sitio para marcarlo → Compartir → Copiar enlace, y pégalo aquí."; }
+  const hi = $("#f-hour"); if (hi) hi.classList.toggle("err", !hourOk(f.hour));
+  $("#f-max-label").textContent = `4. ¿Cuánta gente? Hasta ${f.max} personas`;
+  $("#f-submit").disabled = !formValid(f);
+}
+document.addEventListener("input", e => {
+  const t = e.target, f = ui.form;
+  if (t.id === "q") { ui.query = t.value; $("#results").innerHTML = exploreResults(); return; }
+  if (f && t.id && t.id.startsWith("f-")) {
+    if (t.id === "f-title") f.title = t.value;
+    if (t.id === "f-place") f.place = t.value;
+    if (t.id === "f-maps") f.maps = t.value;
+    if (t.id === "f-hour") f.hour = t.value;
+    if (t.id === "f-max") f.max = Number(t.value);
+    if (t.id === "f-erasmus") f.erasmus = t.checked;
+    updateCreateForm();
+  }
+  const v = ui.verify;
+  if (v) {
+    if (t.id === "v-name") v.name = t.value;
+    if (t.id === "v-email") v.email = t.value;
+    if (t.id === "v-code") v.code = t.value.replace(/\D/g, "");
+  }
+});
+document.addEventListener("change", e => {
+  const t = e.target, act = t.dataset.act;
+  if (act === "theme") { S.theme = t.value; save(); render(); }
+  if (act === "notify") { S.notify[t.dataset.v] = t.checked; save(); }
+  if (t.id === "f-erasmus" && ui.form) ui.form.erasmus = t.checked;
+  if (ui.verify) { if (t.id === "v-ok1") ui.verify.ok1 = t.checked; if (t.id === "v-ok2") ui.verify.ok2 = t.checked; }
+});
+document.addEventListener("submit", e => {
+  e.preventDefault();
+  if (e.target.id === "composer") {
+    const input = $("#msg"); sendMessage(cur().id, input.value); input.value = ""; softRender(); input.focus();
+  }
+});
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { if (S.theme === "system") applyTheme(); });
+
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-go],[data-act]");
+  if (!el) { if (ui.menu && ui.menu !== "reset") { ui.menu = null; render(); } return; }
+  if (el.tagName === "A") return;
+  const d = el.dataset;
+  if (d.go) {
+    e.preventDefault();
+    const params = {};
+    if (d.id) params.id = d.id;
+    if (d.plan) params.plan = d.plan;
+    if (d.coupon) params.coupon = d.coupon;
+    if (d.go === "create") ui.form = null;
+    if (d.go === "verify") ui.verify = null;
+    go(d.go, params); return;
+  }
+  const act = d.act, v = d.v;
+  if (act === "theme" || act === "notify") return; // los gestiona "change"
+  e.preventDefault();
+  switch (act) {
+    case "back": back(); break;
+    case "tab": tab(v); break;
+    case "menu": ui.menu = ui.menu === v || !v ? null : v; render(); break;
+    case "city": S.city = v; ui.menu = null; save(); render(); break;
+    case "cat": ui.cat = v || null; render(); break;
+    case "ecat": ui.ecat = v || null; $("#results").innerHTML = exploreResults(); document.querySelectorAll('[data-act="ecat"]').forEach(b => b.setAttribute("aria-pressed", String((b.dataset.v || null) === ui.ecat))); break;
+    case "group": ui.group = v === "null" ? null : v === "true"; render(); break;
+    case "fav": { const i = S.favorites.indexOf(d.id); i >= 0 ? S.favorites.splice(i, 1) : S.favorites.push(d.id); save(); render(); break; }
+    case "join-open": joinPlan(d.id); go("chat", { id: d.id }); break;
+    case "join": joinPlan(d.id); render(); break;
+    case "leave": ui.menu = null; leavePlan(d.id); render(); break;
+    case "complete": completePlan(d.id); softRender(); break;
+    case "redeem-plan": redeemPlan(d.id); render(); break;
+    case "redeem-coupon": redeemCoupon(d.id); render(); break;
+    case "claim": claimReward(d.id); ui.revealCode = d.id; render(); break;
+    case "show-code": ui.revealCode = ui.revealCode === d.id ? null : d.id; render(); break;
+    case "copy": copy(v); break;
+    case "ptab": ui.planTab = Number(v); render(); break;
+    case "ptype": ui.form.type = Number(v); render(); break;
+    case "pday": ui.form.day = v; render(); break;
+    case "create": {
+      const f = ui.form; if (!formValid(f)) break;
+      const c = f.couponId ? CPN[f.couponId] : null, b = c ? BIZ[c.biz] : null, [tl, te] = PLAN_TYPES[f.type];
+      const id = createPlan({
+        couponId: f.couponId, emoji: c ? c.emoji : te,
+        title: f.title.trim() || `${tl} en ${b ? b.name : f.place.trim()}`,
+        place: b ? `${b.name} · ${b.address}` : f.place.trim(),
+        maps: f.maps.trim(), when: `${f.day}, ${f.hour}`, max: f.max, erasmus: f.erasmus,
+      });
+      ui.form = null; stack.pop(); go("chat", { id }); break;
+    }
+    case "share-coupon": { const c = CPN[d.id]; copy(`¿Nos vamos de UniPlan? ${c.title} en ${BIZ[c.biz].name} 🎉 El cupón es la excusa, el grupo es el plan.`, "Mensaje copiado para compartir"); break; }
+    case "share-plan": { const p = plan(d.id); ui.menu = null; copy(`¡Únete a mi UniPlan "${p.title}"! ${p.when} en ${p.place}. ${mapsUrl(p)}`, "Plan copiado para compartir"); render(); break; }
+    case "test-toast": toast("🎉 Así se ven los avisos de UniPlan"); break;
+    case "reset-yes": S = initialState(); save(); ui.menu = null; stack = [{ name: "profile" }]; toast("Demo reiniciada"); render(true); break;
+    case "verify-send": {
+      const vv = ui.verify;
+      vv.err = !vv.name.trim() ? "Escribe tu nombre" : !/^[A-Za-z0-9._%+-]+@(alumnos\.)?unex\.es$/i.test(vv.email.trim()) ? "Usa tu correo @alumnos.unex.es o @unex.es" : !(vv.ok1 && vv.ok2) ? "Acepta la privacidad y confirma tu edad" : "";
+      if (!vv.err) { vv.step = 1; vv.sent = String(100000 + Math.floor(Math.random() * 900000)); vv.code = ""; }
+      render(); break;
+    }
+    case "verify-check": {
+      const vv = ui.verify;
+      if (vv.code === vv.sent) {
+        S.user = { ...S.user, name: vv.name.trim(), email: vv.email.trim().toLowerCase() }; save();
+        ui.verify = null; toast("✅ Correo verificado"); back();
+      } else { vv.err = "Código incorrecto"; render(); }
+      break;
+    }
+    case "verify-reset": ui.verify.step = 0; ui.verify.err = ""; render(); break;
+  }
+});
+
+render();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+</script>
+</body>
+</html>
