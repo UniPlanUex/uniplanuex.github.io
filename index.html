@@ -330,7 +330,7 @@ function couponPlan(id, cid, title, when, creator, members, max, extra = {}) {
 function freePlan(id, title, emoji, city, place, when, creator, members, max, extra = {}) {
   return { id, title, emoji, city, place, maps: null, when, creator, members, max, couponId: null, erasmus: false, redeemed: false, completed: false, ...extra };
 }
-function history() {
+function pastPlans() {
   const today = new Date();
   const first = new Date(today.getFullYear(), today.getMonth(), 1);
   const fmt = d => String(d.getDate()).padStart(2, "0") + "/" + String(d.getMonth() + 1).padStart(2, "0");
@@ -372,7 +372,7 @@ function initialState() {
       freePlan("p10", "Paseo por la Alcazaba al atardecer", "🚶", "Badajoz", "Alcazaba de Badajoz", "Sábado, 19:00", "Giulia R.", ["Giulia R.", "Luca B."], 10, { erasmus: true }),
       couponPlan("p5", "c6", "Ruta de tapas por el centro", "Sábado, 13:00", "Sofía D.", ["Sofía D.", "Luca B."], 6, { erasmus: true }),
       couponPlan("p6", "c8", "Bolos Erasmus", "Domingo, 18:00", "Emma K.", ["Emma K.", "Hugo F.", "Irene V."], 8, { erasmus: true }),
-      ...history(),
+      ...pastPlans(),
     ],
     messages: [
       [1, "p3", "Carlos M.", "¡Hola a todos! ¿Quién se anima esta noche? 🍻"],
@@ -455,9 +455,52 @@ const TABS = ["home", "explore", "myplans", "profile"];
 let stack = [{ name: "home" }];
 const ui = { cat: null, group: null, ecat: null, query: "", planTab: 0, menu: null, form: null, revealCode: null };
 const cur = () => stack[stack.length - 1];
-function go(name, params = {}) { stack.push({ name, ...params }); ui.menu = null; render(true); }
-function back() { if (stack.length > 1) stack.pop(); ui.menu = null; render(true); }
-function tab(name) { stack = [{ name }]; ui.menu = null; render(true); }
+// La pila de pantallas va sincronizada con el historial del navegador, para que el botón
+// Atrás del móvil haga lo mismo que la flecha de la app. Inicio es siempre la base:
+// desde Explorar, Planes o Perfil, Atrás vuelve a Inicio, y desde Inicio sale de la web.
+let pendingStack = null;   // pila que se aplica cuando termina un history.go() hacia atrás
+let backFallback = null;   // por si el navegador no avisa del cambio (algunos visores embebidos)
+function syncHistory(replace = false) {
+  const state = { uniplan: stack.length - 1 };
+  try { replace ? history.replaceState(state, "") : history.pushState(state, ""); } catch (e) { /* sin historial: la app sigue funcionando */ }
+}
+function show() { ui.menu = null; render(true); }
+function go(name, params = {}) { stack.push({ name, ...params }); syncHistory(); show(); }
+function replaceTop(name, params = {}) { stack[stack.length - 1] = { name, ...params }; syncHistory(true); show(); }
+function back() {
+  if (stack.length <= 1) return;
+  clearTimeout(backFallback);
+  backFallback = setTimeout(() => { if (stack.length > 1) { stack.pop(); syncHistory(true); show(); } }, 400);
+  history.back();
+}
+// Cambia la pila entera: deshace en el historial las pantallas que sobran y añade las nuevas.
+function resetTo(newStack) {
+  const extra = stack.length - 1;
+  if (extra > 0) {
+    pendingStack = newStack;
+    clearTimeout(backFallback);
+    backFallback = setTimeout(() => { if (pendingStack) { pendingStack = null; applyStack(newStack); } }, 400);
+    history.go(-extra);
+    return;
+  }
+  applyStack(newStack);
+}
+function applyStack(newStack) {
+  stack = [newStack[0]]; syncHistory(true);
+  newStack.slice(1).forEach(s => { stack.push(s); syncHistory(); });
+  show();
+}
+function tab(name) { resetTo(name === "home" ? [{ name: "home" }] : [{ name: "home" }, { name }]); }
+addEventListener("popstate", e => {
+  clearTimeout(backFallback);
+  if (pendingStack) {
+    const target = pendingStack; pendingStack = null;
+    applyStack(target); return;
+  }
+  const depth = e.state && typeof e.state.uniplan === "number" ? e.state.uniplan : 0;
+  if (depth < stack.length - 1) { stack = stack.slice(0, depth + 1); show(); }
+  else if (depth > stack.length - 1) history.go(stack.length - 1 - depth); // "Adelante": no hay pantalla que recuperar
+});
 
 // ---------------------------------------------------------------- Acciones
 function notify(emoji, text, kind) {
@@ -1071,12 +1114,12 @@ document.addEventListener("click", e => {
         place: b ? `${b.name} · ${b.address}` : f.place.trim(),
         maps: f.maps.trim(), when: `${f.day}, ${f.hour}`, max: f.max, erasmus: f.erasmus,
       });
-      ui.form = null; stack.pop(); go("chat", { id }); break;
+      ui.form = null; replaceTop("chat", { id }); break;
     }
     case "share-coupon": { const c = CPN[d.id]; copy(`¿Nos vamos de UniPlan? ${c.title} en ${BIZ[c.biz].name} 🎉 El cupón es la excusa, el grupo es el plan.`, "Mensaje copiado para compartir"); break; }
     case "share-plan": { const p = plan(d.id); ui.menu = null; copy(`¡Únete a mi UniPlan "${p.title}"! ${p.when} en ${p.place}. ${mapsUrl(p)}`, "Plan copiado para compartir"); render(); break; }
     case "test-toast": toast("🎉 Así se ven los avisos de UniPlan"); break;
-    case "reset-yes": S = initialState(); save(); ui.menu = null; stack = [{ name: "profile" }]; toast("Demo reiniciada"); render(true); break;
+    case "reset-yes": S = initialState(); save(); toast("Demo reiniciada"); tab("profile"); break;
     case "verify-send": {
       const vv = ui.verify;
       vv.err = !vv.name.trim() ? "Escribe tu nombre" : !/^[A-Za-z0-9._%+-]+@(alumnos\.)?unex\.es$/i.test(vv.email.trim()) ? "Usa tu correo @alumnos.unex.es o @unex.es" : !(vv.ok1 && vv.ok2) ? "Acepta la privacidad y confirma tu edad" : "";
@@ -1095,6 +1138,7 @@ document.addEventListener("click", e => {
   }
 });
 
+syncHistory(true);
 render();
 </script>
 
