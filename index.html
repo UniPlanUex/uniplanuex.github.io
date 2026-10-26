@@ -288,6 +288,61 @@ input[type="range"] { width: 100%; accent-color: var(--green); }
 #toast { position: fixed; z-index: 40; left: 50%; transform: translateX(-50%); top: calc(12px + env(safe-area-inset-top, 0px)); width: min(440px, calc(100% - 32px)); display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
 .toast { background: var(--fg); color: var(--bg); padding: 12px 14px; border-radius: 14px; box-shadow: 0 6px 20px rgba(0,0,0,.2); font-weight: 600; animation: in .25s ease-out; }
 @keyframes in { from { transform: translateY(-8px); opacity: 0; } }
+/* ---------------------------------------------------------------- Ordenador: escaparate + móvil
+   La app vive dentro de .phone-screen; su transform hace que los elementos "fixed" de la app
+   (barra inferior, botones de abajo, avisos) se coloquen respecto a la pantalla del móvil. */
+:root { --desk-bg: #EEF3EF; --desk-ink: #14231B; --device: #121513; }
+:root.dark { --desk-bg: #0C0F0D; --desk-ink: #E6E8E5; --device: #000; }
+html.desktop body { background: var(--desk-bg); }
+.showcase {
+  min-height: 100vh; display: grid; grid-template-columns: minmax(0, 540px) auto; align-items: center; justify-content: center;
+  gap: clamp(40px, 6vw, 110px); padding-block: 16px; padding-left: max(48px, env(safe-area-inset-left, 0px)); padding-right: max(48px, env(safe-area-inset-right, 0px));
+}
+.pitch { display: flex; flex-direction: column; gap: 22px; color: var(--desk-ink); min-width: 0; }
+.pitch .brand { width: 132px; height: auto; border-radius: 24px; background: #fff; padding: 10px; box-shadow: var(--shadow); transform: rotate(-4deg); }
+.pitch .eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--green); }
+.pitch h1 { font-size: clamp(36px, 3.6vw, 54px); line-height: 1.04; font-weight: 900; }
+.pitch h1 .ex { color: var(--teal); } .pitch h1 .pl { color: var(--yellow); }
+.pitch .lead { font-size: 18px; line-height: 1.55; max-width: 34em; color: var(--muted); }
+.pitch ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; counter-reset: s; }
+.pitch li { display: grid; grid-template-columns: 40px 1fr; gap: 14px; align-items: start; counter-increment: s; }
+.pitch li::before { content: counter(s); width: 40px; height: 40px; border-radius: 12px; background: var(--green); color: #fff; display: grid; place-items: center; font-family: var(--font-display); font-weight: 900; font-size: 18px; }
+.pitch li b { display: block; font-size: 16px; color: var(--desk-ink); }
+.pitch li > span > span { color: var(--muted); font-size: 15px; }
+.facts { display: flex; flex-wrap: wrap; gap: 10px; }
+.facts span { background: var(--surface); border-radius: 999px; padding: 6px 14px; font-weight: 700; font-size: 14px; box-shadow: var(--shadow); font-variant-numeric: tabular-nums; }
+.facts b { color: var(--green); font-family: var(--font-display); font-weight: 900; }
+.qr-pitch { display: flex; gap: 18px; align-items: center; background: var(--surface); border-radius: 20px; padding: 16px 18px; box-shadow: var(--shadow); max-width: 480px; }
+.qr-pitch #site-qr { background: #fff; padding: 8px; border-radius: 12px; flex: none; }
+.qr-pitch #site-qr img, .qr-pitch #site-qr canvas { display: block; width: 112px; height: 112px; image-rendering: pixelated; }
+.qr-pitch b { font-family: var(--font-display); font-size: 18px; display: block; }
+.qr-pitch code { font-family: inherit; font-weight: 700; color: var(--green); user-select: all; }
+.device-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.device {
+  --h: min(calc(100vh - 72px), 940px);
+  height: var(--h); width: max(380px, calc(var(--h) * .48)); padding: 12px; border-radius: 56px;
+  background: var(--device); box-shadow: 0 30px 60px rgba(10, 40, 25, .25), inset 0 0 0 2px #2c302d;
+}
+.phone-screen { position: relative; height: 100%; border-radius: 44px; overflow: hidden; transform: translateZ(0); background: var(--bg); display: flex; flex-direction: column; }
+.status { flex: none; height: 38px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; font-weight: 700; font-size: 14px; color: var(--fg); background: var(--bg); position: relative; z-index: 25; }
+.status::after { content: ""; position: absolute; left: 50%; top: 9px; transform: translateX(-50%); width: 96px; height: 26px; border-radius: 13px; background: #000; }
+.status .icons { display: flex; gap: 6px; align-items: center; }
+.phone-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
+.phone-scroll::-webkit-scrollbar { display: none; }
+html.desktop .chat { height: calc(var(--h) - 24px - 38px); }
+html.desktop #toast { top: 48px; }
+.device-hint { margin: 0; color: var(--muted); font-size: 14px; font-weight: 600; }
+.chips, .hscroll { cursor: grab; }
+.dragging, .dragging * { cursor: grabbing !important; user-select: none; }
+@media (max-height: 860px) {
+  .pitch { gap: 16px; }
+  .pitch .brand { display: none; }
+  .pitch h1 { font-size: clamp(32px, 3.2vw, 44px); }
+  .pitch .lead { font-size: 16px; }
+  .pitch ol { gap: 10px; }
+  .pitch li > span > span { font-size: 14px; }
+  .qr-pitch #site-qr img, .qr-pitch #site-qr canvas { width: 96px; height: 96px; }
+}
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 .empty { text-align: center; padding: 40px 12px; color: var(--muted); display: flex; flex-direction: column; gap: 8px; align-items: center; }
 .empty .e { font-size: 44px; }
@@ -303,6 +358,8 @@ input[type="range"] { width: 100%; accent-color: var(--green); }
 // ---------------------------------------------------------------- Datos
 const DATA = {"biz": [{"id": "b1", "name": "Bar Golfol", "cat": "BARES", "city": "Badajoz", "address": "Calle Menacho 12, Badajoz", "dist": 180}, {"id": "b2", "name": "Bar La Sureña", "cat": "BARES", "city": "Badajoz", "address": "Av. de Elvas s/n, Badajoz", "dist": 250}, {"id": "b3", "name": "Burger UEX", "cat": "RESTAURANTES", "city": "Badajoz", "address": "Campus de Badajoz, Av. de Elvas", "dist": 350}, {"id": "b4", "name": "Restaurante El Mirador", "cat": "RESTAURANTES", "city": "Badajoz", "address": "Plaza Alta 3, Badajoz", "dist": 400}, {"id": "b5", "name": "Cines Puerta Palmas", "cat": "OCIO", "city": "Badajoz", "address": "Calle Puerta de Palmas 1, Badajoz", "dist": 900}, {"id": "b9", "name": "Zapatería Paso a Paso", "cat": "MODA", "city": "Badajoz", "address": "Calle San Juan 21, Badajoz", "dist": 600}, {"id": "b10", "name": "Moda Alcazaba", "cat": "MODA", "city": "Badajoz", "address": "Calle Francisco Pizarro 8, Badajoz", "dist": 650}, {"id": "b11", "name": "Carnicería La Dehesa", "cat": "ALIMENTACION", "city": "Badajoz", "address": "Av. Santa Marina 14, Badajoz", "dist": 500}, {"id": "b12", "name": "Frutería El Huerto del Guadiana", "cat": "ALIMENTACION", "city": "Badajoz", "address": "Calle Ramón Albarrán 5, Badajoz", "dist": 550}, {"id": "b13", "name": "Horno San Andrés", "cat": "ALIMENTACION", "city": "Badajoz", "address": "Plaza de San Andrés 2, Badajoz", "dist": 700}, {"id": "b14", "name": "Papelería El Cuaderno", "cat": "PAPELERIA", "city": "Badajoz", "address": "Av. de Elvas 40, Badajoz", "dist": 300}, {"id": "b15", "name": "Librería Los Pilares", "cat": "PAPELERIA", "city": "Badajoz", "address": "Calle Obispo San Juan de Ribera 4, Badajoz", "dist": 800}, {"id": "b16", "name": "Copistería Campus Print", "cat": "SERVICIOS", "city": "Badajoz", "address": "Av. de Elvas 52, Badajoz", "dist": 200}, {"id": "b17", "name": "Peluquería Estilo Uni", "cat": "SERVICIOS", "city": "Badajoz", "address": "Calle Juan Carlos I 10, Badajoz", "dist": 750}, {"id": "b18", "name": "Óptica Vista Clara", "cat": "SERVICIOS", "city": "Badajoz", "address": "Paseo de San Francisco 6, Badajoz", "dist": 850}, {"id": "b19", "name": "Gimnasio Guadiana Fit", "cat": "DEPORTE", "city": "Badajoz", "address": "Av. de Europa 9, Badajoz", "dist": 1100}, {"id": "b20", "name": "Bicis Rueda Libre", "cat": "DEPORTE", "city": "Badajoz", "address": "Calle Stadium 3, Badajoz", "dist": 950}, {"id": "b6", "name": "Taberna Plaza Mayor", "cat": "BARES", "city": "Cáceres", "address": "Plaza Mayor 8, Cáceres", "dist": 300}, {"id": "b7", "name": "Pizzería Los Adarves", "cat": "RESTAURANTES", "city": "Cáceres", "address": "Calle Pintores 20, Cáceres", "dist": 450}, {"id": "b8", "name": "Bolera Cáceres", "cat": "OCIO", "city": "Cáceres", "address": "Av. de la Universidad 5, Cáceres", "dist": 700}, {"id": "b21", "name": "Papelería Campus Cáceres", "cat": "PAPELERIA", "city": "Cáceres", "address": "Av. de la Universidad 12, Cáceres", "dist": 250}, {"id": "b22", "name": "Calzados Cánovas", "cat": "MODA", "city": "Cáceres", "address": "Paseo de Cánovas 15, Cáceres", "dist": 900}], "coupons": [{"id": "c1", "biz": "b1", "title": "Jarra GRATIS con cada ración", "label": "GRATIS", "desc": "Por cada ración que pidáis para compartir, una jarra gratis, cuando vais al menos 3 personas con un UniPlan. Ideal para conocer a la gente de clase fuera del grupo de WhatsApp.", "emoji": "🍺", "min": 3, "until": "31/05/2027", "conds": ["Una jarra gratis por cada ración pedida", "No acumulable a otras ofertas", "Solo mayores de 18 años", "Consumo responsable"], "save": 2.5, "adult": true, "featured": true}, {"id": "c2", "biz": "b3", "title": "2x1 Burger", "label": "2x1", "desc": "Pide dos hamburguesas y paga solo una. Perfecto para una comida rápida entre clases con tu compañero de prácticas.", "emoji": "🍔", "min": 2, "until": "30/06/2027", "conds": ["Válido de lunes a jueves", "Se paga la hamburguesa de mayor precio"], "save": 8.0, "adult": false, "featured": true}, {"id": "c3", "biz": "b5", "title": "20% Cine Universitario", "label": "-20%", "desc": "20% de descuento en la entrada para grupos de 2 o más universitarios. Cualquier sesión de lunes a jueves.", "emoji": "🎬", "min": 2, "until": "31/05/2027", "conds": ["No válido en estrenos el primer fin de semana", "Presenta el QR en taquilla"], "save": 1.6, "adult": false, "featured": false}, {"id": "c4", "biz": "b2", "title": "-20% en todas las copas", "label": "-20%", "desc": "Disfruta de un 20% de descuento en todas las copas al asistir a un UniPlan de 3 personas o más.", "emoji": "🍹", "min": 3, "until": "31/05/2027", "conds": ["Válido todos los días hasta las 02:00", "Solo mayores de 18 años", "Consumo responsable"], "save": 3.0, "adult": true, "featured": false}, {"id": "c5", "biz": "b4", "title": "Menú universitario 9,90 €", "label": "9,90 €", "desc": "Primero, segundo, bebida y postre por 9,90 € para grupos de 4 o más. Para celebrar el fin de exámenes como se merece.", "emoji": "🍝", "min": 4, "until": "30/06/2027", "conds": ["De lunes a viernes al mediodía", "Reserva recomendada"], "save": 4.0, "adult": false, "featured": false}, {"id": "c9", "biz": "b11", "title": "Pack barbacoa para 4: -20%", "label": "-20%", "desc": "Pack de carne para barbacoa (chorizo, pinchitos, panceta y costilla) con un 20% de descuento si lo compráis entre 4 o más. Para la próxima quedada en el piso.", "emoji": "🍖", "min": 4, "until": "30/06/2027", "conds": ["Encargo con 24 h de antelación", "Recogida en tienda"], "save": 6.0, "adult": false, "featured": false}, {"id": "c10", "biz": "b19", "title": "2x1 en la cuota mensual", "label": "2x1", "desc": "Apúntate con un amigo y pagad una sola cuota el primer mes. Entrenar acompañado motiva más.", "emoji": "🏋️", "min": 2, "until": "31/12/2026", "conds": ["Primer mes de alta", "Ambos deben ser estudiantes UEx"], "save": 25.0, "adult": false, "featured": true}, {"id": "c11", "biz": "b16", "title": "Apuntes encuadernados en grupo -30%", "label": "-30%", "desc": "Juntad los apuntes de la asignatura entre 4 o más y os encuadernamos todos los ejemplares con un 30% de descuento.", "emoji": "📒", "min": 4, "until": "30/06/2027", "conds": ["Mismo documento para todo el grupo", "Listo en 24 h"], "save": 3.0, "adult": false, "featured": false}, {"id": "c6", "biz": "b6", "title": "Tapa gratis con cada ronda", "label": "GRATIS", "desc": "Una tapa de la casa gratis con cada ronda para grupos de 3 o más en pleno casco histórico.", "emoji": "🥘", "min": 3, "until": "31/05/2027", "conds": ["Tapa del día", "Una tapa por ronda completa"], "save": 2.0, "adult": false, "featured": true}, {"id": "c7", "biz": "b7", "title": "Pizza familiar -30%", "label": "-30%", "desc": "30% de descuento en pizzas familiares para grupos de 3 o más. Para compartir, como los apuntes.", "emoji": "🍕", "min": 3, "until": "30/06/2027", "conds": ["En local, no a domicilio"], "save": 5.0, "adult": false, "featured": false}, {"id": "c8", "biz": "b8", "title": "2x1 en partida de bolos", "label": "2x1", "desc": "Dos partidas por el precio de una para grupos de 2 o más. Incluye alquiler de calzado.", "emoji": "🎳", "min": 2, "until": "31/05/2027", "conds": ["De domingo a jueves"], "save": 4.0, "adult": false, "featured": false}, {"id": "c12", "biz": "b9", "title": "15% en calzado", "label": "-15%", "desc": "15% de descuento en toda la tienda presentando el cupón. Zapatillas, botas y zapato de vestir.", "emoji": "👟", "min": 1, "until": "31/03/2027", "conds": ["No acumulable a rebajas", "Un uso por estudiante"], "save": 9.0, "adult": false, "featured": true}, {"id": "c13", "biz": "b10", "title": "10% en tu compra", "label": "-10%", "desc": "10% de descuento en ropa y complementos de la nueva temporada.", "emoji": "👕", "min": 1, "until": "31/03/2027", "conds": ["Compra mínima de 20 €"], "save": 3.0, "adult": false, "featured": false}, {"id": "c14", "biz": "b11", "title": "-3 € en compras de más de 15 €", "label": "-3 €", "desc": "Para llenar los táperes de la semana: 3 € de descuento en compras superiores a 15 €.", "emoji": "🥩", "min": 1, "until": "31/12/2026", "conds": ["Un uso por semana"], "save": 3.0, "adult": false, "featured": false}, {"id": "c15", "biz": "b12", "title": "Bolsa de fruta semanal -15%", "label": "-15%", "desc": "Bolsa de fruta y verdura de temporada (3 kg) con un 15% de descuento. Producto de la Vega del Guadiana.", "emoji": "🍎", "min": 1, "until": "31/12/2026", "conds": ["Contenido según temporada"], "save": 1.5, "adult": false, "featured": false}, {"id": "c16", "biz": "b13", "title": "Café + tostada por 1,50 €", "label": "1,50 €", "desc": "Desayuno universitario: café y media tostada con tomate y aceite por 1,50 €.", "emoji": "☕", "min": 1, "until": "30/06/2027", "conds": ["De lunes a viernes hasta las 11:00"], "save": 1.2, "adult": false, "featured": false}, {"id": "c17", "biz": "b14", "title": "10% en material escolar", "label": "-10%", "desc": "10% de descuento en cuadernos, bolígrafos, calculadoras y material de dibujo técnico.", "emoji": "✏️", "min": 1, "until": "30/06/2027", "conds": ["No aplicable a libros de texto"], "save": 2.0, "adult": false, "featured": false}, {"id": "c18", "biz": "b15", "title": "10% en libros de lectura", "label": "-10%", "desc": "10% de descuento en novela, ensayo y cómic. Y un marcapáginas de regalo.", "emoji": "📚", "min": 1, "until": "30/06/2027", "conds": ["No aplicable a libros de texto (ley del precio fijo)"], "save": 2.0, "adult": false, "featured": false}, {"id": "c19", "biz": "b16", "title": "Impresión y encuadernación del TFG -20%", "label": "-20%", "desc": "Imprime y encuaderna tu TFG o TFM con un 20% de descuento. Tapa dura disponible.", "emoji": "🎓", "min": 1, "until": "30/07/2027", "conds": ["Entrega en 48 h"], "save": 6.0, "adult": false, "featured": false}, {"id": "c20", "biz": "b17", "title": "Corte de pelo -25%", "label": "-25%", "desc": "25% de descuento en corte y peinado los martes y miércoles.", "emoji": "✂️", "min": 1, "until": "31/03/2027", "conds": ["Solo martes y miércoles", "Cita previa"], "save": 4.0, "adult": false, "featured": false}, {"id": "c21", "biz": "b18", "title": "20% en gafas + revisión de vista incluida", "label": "-20%", "desc": "Al comprar tus gafas graduadas o de sol, 20% de descuento y la revisión visual completa incluida.", "emoji": "👓", "min": 1, "until": "31/12/2026", "conds": ["Revisión incluida con la compra de gafas", "Cita previa"], "save": 20.0, "adult": false, "featured": false}, {"id": "c22", "biz": "b20", "title": "Puesta a punto GRATIS con tu compra", "label": "GRATIS", "desc": "Compra cualquier recambio o accesorio de más de 15 € (cubiertas, luces, candado…) y te hacemos la puesta a punto de la bici gratis: frenos, cambios y ruedas.", "emoji": "🚲", "min": 1, "until": "31/12/2026", "conds": ["Con compras de más de 15 € en recambios o accesorios", "Mano de obra de la puesta a punto incluida"], "save": 10.0, "adult": false, "featured": false}, {"id": "c23", "biz": "b21", "title": "Fotocopias a 0,03 €", "label": "0,03 €", "desc": "Fotocopias e impresiones en blanco y negro a 0,03 € la página.", "emoji": "🖨️", "min": 1, "until": "30/06/2027", "conds": ["A4, una cara"], "save": 1.0, "adult": false, "featured": false}, {"id": "c24", "biz": "b22", "title": "12% en zapatillas", "label": "-12%", "desc": "12% de descuento en zapatillas deportivas y casual.", "emoji": "👟", "min": 1, "until": "31/03/2027", "conds": ["No acumulable a otras ofertas"], "save": 7.0, "adult": false, "featured": false}]};
 const BANNERS = { badajoz: "img/banner_badajoz.jpg", caceres: "img/banner_caceres.jpg" };
+const LOGO = "img/logo.png";
+const SITE_URL = "https://uniplanuex.github.io";
 const ME = "Tú";
 const CITIES = ["Badajoz", "Cáceres"];
 const CATS = {
@@ -992,7 +1049,7 @@ function render(scrollTop = false) {
   const app = $("#app");
   app.className = isTab ? "" : s.name === "chat" ? "chat-mode" : "no-nav";
   app.innerHTML = (screens[s.name] || screens.home)(s) + (isTab ? navBar(s.name) : "");
-  if (scrollTop) window.scrollTo(0, 0);
+  if (scrollTop) (scroller || window).scrollTo(0, 0);
   afterRender(s);
 }
 function afterRender(s) {
@@ -1066,6 +1123,73 @@ document.addEventListener("submit", e => {
 });
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { if (S.theme === "system") applyTheme(); });
 
+// ---------------------------------------------------------------- Ordenador: escaparate
+const DESKTOP = matchMedia("(min-width: 900px) and (hover: hover) and (pointer: fine)");
+let scroller = null, clockTimer = null;
+function pitchHTML() {
+  const shops = DATA.biz.length, coupons = DATA.coupons.length, solo = DATA.coupons.filter(c => c.min === 1).length;
+  return `<section class="pitch">
+    <img class="brand" src="${LOGO}" alt="UniPlan" width="310" height="304">
+    <span class="eyebrow">Badajoz · Cáceres · Universidad de Extremadura</span>
+    <h1>El cupón es la <span class="ex">excusa</span>, el grupo es el <span class="pl">plan</span>.</h1>
+    <p class="lead">UniPlan conecta a los estudiantes de la UEx con los comercios de su ciudad. Los descuentos se desbloquean cuando quedáis en grupo: ahorras tú, gana el comercio local y el chat de clase se convierte en un plan de verdad.</p>
+    <ol>
+      <li><span><b>Elige un cupón</b><span>De bares, restaurantes y comercio local: zapaterías, papelerías, carnicerías…</span></span></li>
+      <li><span><b>Únete o crea un plan</b><span>El grupo se organiza en el chat y el cupón se desbloquea al llegar al mínimo de personas.</span></span></li>
+      <li><span><b>Quedad y canjead</b><span>Enseñáis el QR en el local. Cada plan suma para los premios del mes.</span></span></li>
+    </ol>
+    <div class="facts"><span><b>${shops}</b> comercios</span><span><b>${coupons}</b> cupones</span><span><b>${solo}</b> individuales</span><span><b>0 €</b> para estudiantes</span></div>
+    <div class="qr-pitch"><div id="site-qr" aria-label="Código QR para abrir UniPlan en el móvil"></div>
+      <div><b>Ábrela en tu móvil</b><p class="small muted">Escanea el código o entra en <code>uniplanuex.github.io</code>. Funciona en Android y iPhone; añádela a la pantalla de inicio para usarla como una app.</p></div></div>
+  </section>`;
+}
+const STATUS_ICONS = '<span class="icons"><svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg><svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor" aria-hidden="true"><path d="M8 2.5c2.3 0 4.4.9 6 2.4l1.4-1.5A10.6 10.6 0 008 .5 10.6 10.6 0 00.6 3.4L2 4.9a8.6 8.6 0 016-2.4zm0 4c1.2 0 2.3.5 3.2 1.2l1.4-1.4A6.6 6.6 0 008 4.5c-1.8 0-3.4.7-4.6 1.8l1.4 1.4A4.6 4.6 0 018 6.5zm0 4l2-2a2.9 2.9 0 00-4 0z"/></svg><svg width="26" height="12" viewBox="0 0 26 12" aria-hidden="true"><rect x=".5" y=".5" width="22" height="11" rx="3" fill="none" stroke="currentColor" opacity=".5"/><rect x="2" y="2" width="17" height="8" rx="2" fill="currentColor"/><rect x="23.5" y="4" width="2" height="4" rx="1" fill="currentColor" opacity=".5"/></svg></span>';
+function setupLayout() {
+  const app = $("#app"), toastEl = $("#toast"), existing = document.querySelector(".showcase");
+  if (DESKTOP.matches && !existing) {
+    document.documentElement.classList.add("desktop");
+    const wrap = document.createElement("div");
+    wrap.className = "showcase";
+    wrap.innerHTML = pitchHTML() + `<div class="device-wrap"><div class="device"><div class="phone-screen">
+      <div class="status"><span id="clock"></span>${STATUS_ICONS}</div><div class="phone-scroll" id="scroller"></div>
+    </div></div><p class="device-hint">Demo interactiva: úsala con el ratón</p></div>`;
+    document.body.insertBefore(wrap, app);
+    $("#scroller").appendChild(app);
+    document.querySelector(".phone-screen").appendChild(toastEl);
+    scroller = $("#scroller");
+    const qr = $("#site-qr");
+    if (window.QRCode) new QRCode(qr, { text: SITE_URL, width: 256, height: 256, correctLevel: QRCode.CorrectLevel.M });
+    else qr.hidden = true;
+    const tick = () => { const c = $("#clock"); if (c) c.textContent = new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }); };
+    tick(); clockTimer = setInterval(tick, 15000);
+  } else if (!DESKTOP.matches && existing) {
+    document.documentElement.classList.remove("desktop");
+    document.body.insertBefore(app, existing);
+    document.body.insertBefore(toastEl, existing);
+    existing.remove(); scroller = null; clearInterval(clockTimer);
+  }
+}
+DESKTOP.addEventListener?.("change", () => { setupLayout(); render(); });
+
+// Con ratón, las filas que se deslizan de lado (categorías, planes…) se pueden arrastrar.
+let drag = null, suppressClick = false;
+document.addEventListener("pointerdown", e => {
+  if (e.pointerType !== "mouse" || e.button !== 0) return;
+  const el = e.target.closest(".chips, .hscroll");
+  if (el && el.scrollWidth > el.clientWidth) drag = { el, x: e.clientX, left: el.scrollLeft, moved: false };
+});
+document.addEventListener("pointermove", e => {
+  if (!drag) return;
+  const dx = e.clientX - drag.x;
+  if (!drag.moved && Math.abs(dx) > 6) { drag.moved = true; document.documentElement.classList.add("dragging"); }
+  if (drag.moved) drag.el.scrollLeft = drag.left - dx;
+});
+document.addEventListener("pointerup", () => {
+  if (drag && drag.moved) { suppressClick = true; setTimeout(() => { suppressClick = false; }, 0); }
+  document.documentElement.classList.remove("dragging"); drag = null;
+});
+document.addEventListener("click", e => { if (suppressClick) { e.preventDefault(); e.stopPropagation(); } }, true);
+
 document.addEventListener("click", e => {
   const el = e.target.closest("[data-go],[data-act]");
   if (!el) { if (ui.menu && ui.menu !== "reset") { ui.menu = null; render(); } return; }
@@ -1138,6 +1262,7 @@ document.addEventListener("click", e => {
   }
 });
 
+setupLayout();
 syncHistory(true);
 render();
 </script>

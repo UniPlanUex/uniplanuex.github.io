@@ -1,6 +1,6 @@
 // Guarda la web en el móvil para que abra rápido y funcione sin conexión.
-const CACHE = "uniplan-c2a079c751";
-const FILES = ["./", "index.html", "manifest.webmanifest", "img/banner_badajoz.jpg", "img/banner_caceres.jpg",
+const CACHE = "uniplan-1049de71b6";
+const FILES = ["./", "index.html", "manifest.webmanifest", "img/banner_badajoz.jpg", "img/banner_caceres.jpg", "img/logo.png",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "icons/favicon-48.png"];
 
 self.addEventListener("install", e => {
