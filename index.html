@@ -309,9 +309,11 @@ html.desktop body { background: var(--desk-bg); }
 .pitch li::before { content: counter(s); width: 40px; height: 40px; border-radius: 12px; background: var(--green); color: #fff; display: grid; place-items: center; font-family: var(--font-display); font-weight: 900; font-size: 18px; }
 .pitch li b { display: block; font-size: 16px; color: var(--desk-ink); }
 .pitch li > span > span { color: var(--muted); font-size: 15px; }
-.facts { display: flex; flex-wrap: wrap; gap: 10px; }
-.facts span { background: var(--surface); border-radius: 999px; padding: 6px 14px; font-weight: 700; font-size: 14px; box-shadow: var(--shadow); font-variant-numeric: tabular-nums; }
-.facts b { color: var(--green); font-family: var(--font-display); font-weight: 900; }
+.wins { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 520px; }
+.wins > div { background: var(--surface); border-radius: 16px; padding: 14px 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 4px; }
+.wins .who { font-family: var(--font-display); font-weight: 900; font-size: 16px; color: var(--green); }
+.wins > div + div .who { color: var(--amber-text); }
+.wins p { font-size: 14px; color: var(--muted); }
 .qr-pitch { display: flex; gap: 18px; align-items: center; background: var(--surface); border-radius: 20px; padding: 16px 18px; box-shadow: var(--shadow); max-width: 480px; }
 .qr-pitch #site-qr { background: #fff; padding: 8px; border-radius: 12px; flex: none; }
 .qr-pitch #site-qr img, .qr-pitch #site-qr canvas { display: block; width: 112px; height: 112px; image-rendering: pixelated; }
@@ -319,8 +321,8 @@ html.desktop body { background: var(--desk-bg); }
 .qr-pitch code { font-family: inherit; font-weight: 700; color: var(--green); user-select: all; }
 .device-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .device {
-  --h: min(calc(100vh - 72px), 940px);
-  height: var(--h); width: max(380px, calc(var(--h) * .48)); padding: 12px; border-radius: 56px;
+  --h: 868px;
+  height: var(--h); width: 414px; padding: 12px; border-radius: 56px; flex: none;
   background: var(--device); box-shadow: 0 30px 60px rgba(10, 40, 25, .25), inset 0 0 0 2px #2c302d;
 }
 .phone-screen { position: relative; height: 100%; border-radius: 44px; overflow: hidden; transform: translateZ(0); background: var(--bg); display: flex; flex-direction: column; }
@@ -334,7 +336,7 @@ html.desktop #toast { top: 48px; }
 .device-hint { margin: 0; color: var(--muted); font-size: 14px; font-weight: 600; }
 .chips, .hscroll { cursor: grab; }
 .dragging, .dragging * { cursor: grabbing !important; user-select: none; }
-@media (max-height: 860px) {
+@media (max-height: 960px) {
   .pitch { gap: 16px; }
   .pitch .brand { display: none; }
   .pitch h1 { font-size: clamp(32px, 3.2vw, 44px); }
@@ -1127,18 +1129,20 @@ matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { 
 const DESKTOP = matchMedia("(min-width: 900px) and (hover: hover) and (pointer: fine)");
 let scroller = null, clockTimer = null;
 function pitchHTML() {
-  const shops = DATA.biz.length, coupons = DATA.coupons.length, solo = DATA.coupons.filter(c => c.min === 1).length;
   return `<section class="pitch">
     <img class="brand" src="${LOGO}" alt="UniPlan" width="310" height="304">
     <span class="eyebrow">Badajoz · Cáceres · Universidad de Extremadura</span>
     <h1>El cupón es la <span class="ex">excusa</span>, el grupo es el <span class="pl">plan</span>.</h1>
-    <p class="lead">UniPlan conecta a los estudiantes de la UEx con los comercios de su ciudad. Los descuentos se desbloquean cuando quedáis en grupo: ahorras tú, gana el comercio local y el chat de clase se convierte en un plan de verdad.</p>
+    <p class="lead">Cupones exclusivos en los bares, restaurantes y comercios de Badajoz y Cáceres para estudiantes de la UEx. Algunos son para ti solo; otros se desbloquean cuando vais en grupo.</p>
     <ol>
-      <li><span><b>Elige un cupón</b><span>De bares, restaurantes y comercio local: zapaterías, papelerías, carnicerías…</span></span></li>
-      <li><span><b>Únete o crea un plan</b><span>El grupo se organiza en el chat y el cupón se desbloquea al llegar al mínimo de personas.</span></span></li>
-      <li><span><b>Quedad y canjead</b><span>Enseñáis el QR en el local. Cada plan suma para los premios del mes.</span></span></li>
+      <li><span><b>Elige un cupón</b><span>Individual, para usarlo cuando quieras, o de grupo, para ir con más gente.</span></span></li>
+      <li><span><b>Si es de grupo, únete o crea un plan</b><span>El cupón se desbloquea al llegar al mínimo de personas.</span></span></li>
+      <li><span><b>Canjéalo en el local</b><span>Enseña el QR al pagar. Cada plan en grupo suma para los premios del mes.</span></span></li>
     </ol>
-    <div class="facts"><span><b>${shops}</b> comercios</span><span><b>${coupons}</b> cupones</span><span><b>${solo}</b> individuales</span><span><b>0 €</b> para estudiantes</span></div>
+    <div class="wins">
+      <div><span class="who">Gana el estudiante</span><p>Ahorra en su día a día, descubre la ciudad y conoce gente nueva. Gratis.</p></div>
+      <div><span class="who">Gana el comercio</span><p>Nuevos clientes que llegan en grupo y vuelven. Solo paga por resultados.</p></div>
+    </div>
     <div class="qr-pitch"><div id="site-qr" aria-label="Código QR para abrir UniPlan en el móvil"></div>
       <div><b>Ábrela en tu móvil</b><p class="small muted">Escanea el código o entra en <code>uniplanuex.github.io</code>. Funciona en Android y iPhone; añádela a la pantalla de inicio para usarla como una app.</p></div></div>
   </section>`;
@@ -1162,6 +1166,7 @@ function setupLayout() {
     else qr.hidden = true;
     const tick = () => { const c = $("#clock"); if (c) c.textContent = new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }); };
     tick(); clockTimer = setInterval(tick, 15000);
+    fitDevice();
   } else if (!DESKTOP.matches && existing) {
     document.documentElement.classList.remove("desktop");
     document.body.insertBefore(app, existing);
@@ -1169,6 +1174,13 @@ function setupLayout() {
     existing.remove(); scroller = null; clearInterval(clockTimer);
   }
 }
+function fitDevice() {
+  const d = document.querySelector(".device");
+  if (!d) return;
+  const hint = 34, room = innerHeight - 32 - hint;          // márgenes y texto de debajo
+  d.style.zoom = String(Math.min(1, room / 868));
+}
+addEventListener("resize", fitDevice);
 DESKTOP.addEventListener?.("change", () => { setupLayout(); render(); });
 
 // Con ratón, las filas que se deslizan de lado (categorías, planes…) se pueden arrastrar.
