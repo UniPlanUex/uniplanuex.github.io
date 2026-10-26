@@ -424,10 +424,10 @@ function pastPlans() {
 }
 function initialState() {
   return {
-    v: 1, nextId: 1000, city: "Badajoz", theme: "light",
+    v: 2, nextId: 1000, city: "Badajoz", theme: "light",
     notify: { plans: true, coupons: true, rewards: true },
     user: { name: "María González", email: "maria.gonzalez@alumnos.unex.es", code: "UNIPLAN23" },
-    favorites: [], redeemedCoupons: ["c14", "c15", "c16"], claimed: {}, unread: 1,
+    favorites: [], redeemedCoupons: ["c13", "c14", "c15", "c16", "c17"], claimed: {}, unread: 1,
     plans: [
       couponPlan("p1", "c4", "Tarde de tapas", "Hoy, 19:30", "Lucía R.", ["Lucía R.", "Carlos M.", "Javier S."], 6),
       couponPlan("p2", "c3", "Noche de cine", "Mañana, 21:00", "Ana P.", ["Ana P.", "Marta L."], 5, { erasmus: true }),
@@ -455,17 +455,17 @@ function initialState() {
     ].map(([id, plan, author, text, sys]) => ({ id, plan, author, text, sys: !!sys })),
     notifications: [
       { id: 1, emoji: "🎁", text: "Tu plan \"Cena universitaria\" se ha completado. ¡Has ahorrado 4,00 €!", time: "Ayer" },
-      { id: 2, emoji: "🏆", text: "Te faltan pocos planes para tu tarjeta regalo de este mes", time: "Ayer" },
+      { id: 2, emoji: "🏆", text: "Te faltan pocos cupones para tu tarjeta regalo de este mes", time: "Ayer" },
       { id: 3, emoji: "🔥", text: "Nuevos descuentos en comercios cerca de ti", time: "2 d" },
     ],
   };
 }
 
 // ---------------------------------------------------------------- Estado (guardado en este navegador)
-const KEY = "uniplan-demo-v1";
+const KEY = "uniplan-demo-v2";
 let S;
 try { S = JSON.parse(localStorage.getItem(KEY)); } catch (e) { S = null; }
-if (!S || S.v !== 1) S = initialState();
+if (!S || S.v !== 2) S = initialState();
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* sin almacenamiento: la demo sigue en memoria */ } }
 
 // ---------------------------------------------------------------- Utilidades
@@ -478,9 +478,11 @@ const minMembers = p => couponOf(p)?.min ?? 2;
 const unlocked = p => p.members.length >= minMembers(p);
 const myPlans = () => S.plans.filter(p => p.members.includes(ME));
 const plansThisMonth = () => myPlans().filter(p => p.completed).length;
+// Para los premios solo cuentan los cupones canjeados en comercios (individuales y de grupo).
+const couponsThisMonth = () => myPlans().filter(p => p.redeemed).length + S.redeemedCoupons.length;
 const redeemedCount = () => myPlans().filter(p => p.redeemed).length + S.redeemedCoupons.length;
 const saved = () => myPlans().filter(p => p.redeemed).reduce((a, p) => a + couponOf(p).save, 0) + S.redeemedCoupons.reduce((a, id) => a + CPN[id].save, 0);
-const nextTier = () => TIERS.find(t => plansThisMonth() < t.need);
+const nextTier = () => TIERS.find(t => couponsThisMonth() < t.need);
 const mapsUrl = p => p.maps || "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(`${p.place}, ${p.city}`);
 const bizMaps = b => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(`${b.name}, ${b.address}`);
 const monthName = () => new Date().toLocaleDateString("es-ES", { month: "long" });
@@ -584,7 +586,7 @@ function checkUnlocked(before, after) {
   }
 }
 function checkRewards(before) {
-  const now = plansThisMonth();
+  const now = couponsThisMonth();
   TIERS.filter(t => before < t.need && now >= t.need).forEach(t => notify(t.emoji, `¡Premio desbloqueado! Ya puedes canjear: ${t.title}`, "rewards"));
 }
 function joinPlan(id) {
@@ -631,7 +633,7 @@ function sendMessage(id, text) {
 function redeemPlan(id) {
   const p = plan(id), c = p && couponOf(p);
   if (!c || !unlocked(p) || p.redeemed) return;
-  const before = plansThisMonth();
+  const before = couponsThisMonth();
   replacePlan({ ...p, redeemed: true, completed: true });
   sys(id, `Cupón canjeado en ${BIZ[c.biz].name} ✅`);
   notify("✅", `Has canjeado "${c.title}" y ahorrado ${euros(c.save)}`, "plans");
@@ -639,18 +641,19 @@ function redeemPlan(id) {
 }
 function completePlan(id) {
   const p = plan(id); if (!p || p.completed || p.couponId || !unlocked(p)) return;
-  const before = plansThisMonth();
-  replacePlan({ ...p, completed: true }); sys(id, "¡Plan completado! Suma a vuestros premios del mes 🏆");
-  checkRewards(before); save();
+  // Los planes sin cupón no suman para los premios.
+  replacePlan({ ...p, completed: true }); sys(id, "¡Plan completado! 🎉"); save();
 }
 function redeemCoupon(cid) {
   const c = CPN[cid]; if (c.min > 1 || S.redeemedCoupons.includes(cid)) return;
+  const before = couponsThisMonth();
   S.redeemedCoupons.push(cid);
-  notify("✅", `Has canjeado "${c.title}" en ${BIZ[c.biz].name} y ahorrado ${euros(c.save)}`, "coupons"); save();
+  notify("✅", `Has canjeado "${c.title}" en ${BIZ[c.biz].name} y ahorrado ${euros(c.save)}`, "coupons");
+  checkRewards(before); save();
 }
 function claimReward(tid) {
   const t = TIERS.find(x => x.id === tid);
-  if (plansThisMonth() < t.need || S.claimed[tid]) return;
+  if (couponsThisMonth() < t.need || S.claimed[tid]) return;
   S.claimed[tid] = "DEMO-" + [0, 0, 0].map(() => 1000 + Math.floor(Math.random() * 9000)).join("-");
   notify(t.emoji, `Has canjeado tu premio: ${t.title}`, "rewards"); save();
 }
@@ -862,7 +865,7 @@ function chatCta(p) {
   const j = p.members.includes(ME), c = couponOf(p);
   if (!(j && unlocked(p) && !p.completed)) return "";
   return c ? `<button class="btn y block" data-go="redeem" data-plan="${p.id}">Canjear cupón (${p.members.length}/${c.min})</button>`
-    : `<button class="btn y block" data-act="complete" data-id="${p.id}">✅ ¡Plan hecho! Sumar a mis premios</button>`;
+    : `<button class="btn y block" data-act="complete" data-id="${p.id}">✅ Marcar el plan como hecho</button>`;
 }
 screens.chat = ({ id }) => {
   const p = plan(id); if (!p) return "";
@@ -917,11 +920,11 @@ screens.myplans = () => {
 };
 
 function rewardsSummary() {
-  const done = plansThisMonth(), next = nextTier(), target = next ? next.need : TIERS[TIERS.length - 1].need;
+  const done = couponsThisMonth(), next = nextTier(), target = next ? next.need : TIERS[TIERS.length - 1].need;
   return `<button class="rewards-card" data-go="rewards">
-    <span class="row" style="width:100%"><b class="grow">🏆 Premios de ${monthName()}</b><b style="color:var(--green)">${done} planes</b></span>
+    <span class="row" style="width:100%"><b class="grow">🏆 Premios de ${monthName()}</b><b style="color:var(--green)">${done} cupones</b></span>
     <span class="bar" style="width:100%"><i style="width:${Math.min(100, done / target * 100)}%"></i></span>
-    <span class="small">${next ? `Te ${next.need - done === 1 ? "falta 1 plan" : `faltan ${next.need - done} planes`} para: ${next.title}` : "¡Has desbloqueado todos los premios del mes!"}</span>
+    <span class="small">${next ? `Te ${next.need - done === 1 ? "falta 1 cupón" : `faltan ${next.need - done} cupones`} para: ${next.title}` : "¡Has desbloqueado todos los premios del mes!"}</span>
   </button>`;
 }
 screens.profile = () => `
@@ -948,14 +951,14 @@ screens.profile = () => `
   </nav>`;
 
 screens.rewards = () => {
-  const done = plansThisMonth();
+  const done = couponsThisMonth();
   return `${topbar("Premios mensuales", monthName()[0].toUpperCase() + monthName().slice(1))}
   <div class="stack">
-    <div class="big-count"><b>${done}</b>planes completados este mes</div>
+    <div class="big-count"><b>${done}</b>cupones canjeados este mes</div>
     ${TIERS.map(t => {
       const ok = done >= t.need, code = S.claimed[t.id];
       return `<div class="card tier">
-        <div class="row"><span style="font-size:34px">${t.emoji}</span><div class="grow"><b>${t.title}</b><p class="small muted">${t.need} planes en el mes</p></div></div>
+        <div class="row"><span style="font-size:34px">${t.emoji}</span><div class="grow"><b>${t.title}</b><p class="small muted">${t.need} cupones canjeados en el mes</p></div></div>
         <div class="bar ${ok ? "ok" : ""}"><i style="width:${Math.min(100, done / t.need * 100)}%"></i></div>
         <div class="row"><span class="grow bold" style="font-variant-numeric:tabular-nums">${Math.min(done, t.need)}/${t.need}</span>
           ${code ? `<button class="btn ghost" data-act="show-code" data-id="${t.id}">${ui.revealCode === t.id ? "Ocultar código" : "Ver código"}</button>`
@@ -963,8 +966,8 @@ screens.rewards = () => {
         ${code && ui.revealCode === t.id ? `<div class="card" style="background:var(--green-soft);text-align:center"><b style="font-size:20px;letter-spacing:.04em">${code}</b><p class="tiny muted">Código de demostración, no es real</p><button class="btn text" data-act="copy" data-v="${code}">Copiar</button></div>` : ""}
       </div>`;
     }).join("")}
-    <h3>¿Qué cuenta como plan?</h3>
-    <p class="muted">Cada plan completado con al menos 2 personas: al canjear un cupón de grupo en un comercio, o al marcar en el chat que el plan se ha hecho. Los cupones individuales no cuentan. El contador se reinicia el día 1 de cada mes.</p>
+    <h3>¿Qué cuenta?</h3>
+    <p class="muted">Cada cupón que canjeas en un comercio asociado, individual o de grupo. Los planes sin cupón no cuentan: los premios son para quien apoya al comercio local. El contador se reinicia el día 1 de cada mes.</p>
   </div>`;
 };
 
@@ -1144,7 +1147,7 @@ function pitchHTML() {
     <ol>
       <li><span><b>Elige un cupón</b><span>Individual, para usarlo cuando quieras, o de grupo, para ir con más gente.</span></span></li>
       <li><span><b>Si es de grupo, únete o crea un plan</b><span>El cupón se desbloquea al llegar al mínimo de personas.</span></span></li>
-      <li><span><b>Canjéalo en el local</b><span>Enseña el QR al pagar. Cada plan en grupo suma para los premios del mes.</span></span></li>
+      <li><span><b>Canjéalo en el local</b><span>Enseña el QR al pagar. Cada cupón canjeado suma para los premios del mes.</span></span></li>
     </ol>
     <div class="wins">
       <div><span class="who">Gana el estudiante</span><p>Ahorra en su día a día, descubre la ciudad y conoce gente nueva. Gratis.</p></div>
